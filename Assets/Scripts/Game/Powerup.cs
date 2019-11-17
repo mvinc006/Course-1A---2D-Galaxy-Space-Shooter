@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(AudioSource))]
 public class Powerup : MonoBehaviour
 {
-    [SerializeField] float _moveSpeed = 4f;
+    [SerializeField] float _powerupMoveSpeed = 4f;
+    [SerializeField] int _shieldLife;
+    [SerializeField] int _ammo = 100;
     [SerializeField] float _duration = 10f;
     [SerializeField] PowerUpType _powerupType;
+    [SerializeField] Color[] _shieldHitColorRange;
 
     private Audio_Manager _audioManager;
     private WaitForSeconds _expireTime;
@@ -22,7 +24,7 @@ public class Powerup : MonoBehaviour
     }
     void Update()
     {
-        transform.Translate(Vector3.down * _moveSpeed * Time.deltaTime);
+        transform.Translate(Vector3.down * _powerupMoveSpeed * Time.deltaTime);
         if (transform.position.y <= -5.5f)
             Destroy(gameObject);
     }
@@ -42,7 +44,10 @@ public class Powerup : MonoBehaviour
                         player.OnSpeedBoostActive(_expireTime);
                         break;
                     case PowerUpType.Shield:
-                        player.OnShieldActive();                        
+                        player.OnShieldActive(_shieldLife, _shieldHitColorRange);                        
+                        break;
+                    case PowerUpType.Ammo:
+                        player.OnAmmoActive(_ammo);
                         break;
                 }
 

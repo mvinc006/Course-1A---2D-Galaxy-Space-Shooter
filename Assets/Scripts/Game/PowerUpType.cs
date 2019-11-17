@@ -4,5 +4,5 @@ using UnityEngine;
 
 public enum PowerUpType
 {
-    TripleShot, Shield, SpeedBoost
+    TripleShot, Shield, SpeedBoost, Ammo
 }

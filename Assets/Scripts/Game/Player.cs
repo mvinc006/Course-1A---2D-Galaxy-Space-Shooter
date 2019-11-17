@@ -12,12 +12,15 @@ public class Player : MonoBehaviour
 
     [SerializeField, Space] GameObject _leftWing;
     [SerializeField] GameObject _rightWing;
-
-    
+    [SerializeField] SpriteRenderer _thruster;
     [SerializeField] GameObject _explosion;
+
+    [SerializeField, Space] Animator _cameraShake;
 
     [SerializeField, Space, Range(1.0f, 10.0f)] float _speed = 3f;
     [SerializeField, Range(0.01f, 2.0f)] float _fireRate = 0.5f;
+    [SerializeField, Range(1f, 3f)] float _thrusterBoostTime;
+    [SerializeField, Range(0f, 256)] int _currentAmmo = 15;
     [SerializeField] int _lives = 3;
 
     private const float _verticalBoundMin = -3.8f;
@@ -29,9 +32,15 @@ public class Player : MonoBehaviour
     private Audio_Manager _audioManager;
     private UI_Manager _uiManager;
     private Animator _anim;
+    private SpriteRenderer _shieldRenderer;
+    private Color[] _shieldColorRange;
 
     private float _canFire = -1f;
+    private float _canBoost = 3f;
+    private bool _boostRecharging;
     private float _speedBoostBonus = 1f;
+    private float _thrusterSpeedBonus = 1f;
+    private int _shieldLife = 0;
     private int _score = 0;
     private bool _bIsTripleShotActive;
     private bool _bIsSpeedBoostActive;
@@ -43,6 +52,8 @@ public class Player : MonoBehaviour
     {
         transform.position = new Vector3(0f, -3.8f, 0f);
         InitCheck();
+        _uiManager.OnThrusterUpdate(_canBoost, _thrusterBoostTime);
+        _uiManager.OnAmmoUpdate(_currentAmmo);
     }
 
     private void InitCheck()
@@ -67,6 +78,8 @@ public class Player : MonoBehaviour
             _anim = anim;
         else
             Debug.LogError("Player must contain an Animator component");
+        if (_shield.TryGetComponent(out SpriteRenderer renderer))
+            _shieldRenderer = renderer;
 
         // Basic GameObjects and Transforms etc
         if (!_leftWing)
@@ -86,17 +99,21 @@ public class Player : MonoBehaviour
     }
 
     void Update()
-    {
-        CalculateMovement();
-     
+    {             
         if (Input.GetKey(KeyCode.Space) && Time.time > _canFire)
-            Fire();
+            Fire();        
+        if (Input.GetKey(KeyCode.LeftShift) && _boostRecharging == false)
+            OnBoost();        
+        else if (!Input.GetKey(KeyCode.LeftShift) || _boostRecharging == true)
+            OnBoostRecharging();
+
+            CalculateMovement();
     }
 
     private void CalculateMovement()
     {
         Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0f);
-        transform.Translate(direction * _speed * _speedBoostBonus * Time.deltaTime);
+        transform.Translate(direction * _speed * _speedBoostBonus * _thrusterSpeedBonus * Time.deltaTime);
 
         // Clamp Vertical
         transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, _verticalBoundMin, _verticalBoundMax), transform.position.z);
@@ -107,40 +124,97 @@ public class Player : MonoBehaviour
         else if (transform.position.x <= -11.3f)
             transform.position = new Vector3(_horizontalBoundMax, transform.position.y, transform.position.z);
 
-        OnMove();       
+        OnMove();        
     }
 
     private void OnMove()
     {
         _anim.SetFloat("xVel", Input.GetAxis("Horizontal"));
-    }    
+    }   
+    
+
+    private void OnBoost()
+    {
+        // if we can boost, then boost and apply speed bonus.
+        if(_canBoost >0 && _boostRecharging == false)
+        {
+            _canBoost -= 1.0f * Time.deltaTime;
+            _thrusterSpeedBonus = 2f;
+            _thruster.color = Color.cyan;
+        }
+        else
+        {            
+            _boostRecharging = true;
+            _thruster.color = Color.white;
+            OnBoostDisable();
+        }
+
+        _uiManager.OnThrusterUpdate(_canBoost, _thrusterBoostTime);
+    }
+
+   
+    void OnBoostRecharging()
+    {        
+        _boostRecharging = true;        
+        _canBoost += 1f * Time.deltaTime;
+        _canBoost = Mathf.Clamp(_canBoost, 0f, _thrusterBoostTime);
+
+        // disable recharging only when we are fully recharged AND left shift button isn't pressed/held
+        if (_canBoost >= (_thrusterBoostTime / _thrusterBoostTime) && !Input.GetKey(KeyCode.LeftShift))
+        {
+            _boostRecharging = false;
+            _thruster.color = Color.white;
+        }
+        else
+            OnBoostDisable();
+                    
+        _uiManager.OnThrusterUpdate(_canBoost, _thrusterBoostTime);
+    }         
+        
+
+    private void OnBoostDisable()
+    {       
+        _thrusterSpeedBonus = 1f;                    
+    }
 
     private void Fire()
     {        
-        _canFire = Time.time + _fireRate;
-        
+        _canFire = Time.time + _fireRate;                
+
+        // TripleShot is a powerup and therefore exempt from the rules of ammunition
         if (_bIsTripleShotActive)
         {
-            Instantiate(_tripleShotLaser, transform.position, Quaternion.identity, _laserContainer).name = "TripleShot";
+            Instantiate(_tripleShotLaser, transform.position, Quaternion.identity, _laserContainer).name = "TripleShot";                        
+        }
+        
+        if(!_bIsTripleShotActive && _currentAmmo > 0)
+        {
+            Instantiate(_laser, transform.position + (Vector3.up * 1.05f), Quaternion.identity, _laserContainer).name = "Player_Laser";
+            _currentAmmo--;
+            _uiManager.OnAmmoUpdate(_currentAmmo);
         }
         else
         {
-            Instantiate(_laser, transform.position + (Vector3.up * 1.05f), Quaternion.identity, _laserContainer).name = "Player_Laser";
+            // out of ammo for primary weapon
+            _uiManager.OnAmmoUpdate(_currentAmmo);
+            return;
         }
 
-        AudioSource.PlayClipAtPoint(_audioManager.GetLaserSound, transform.position, 0.5f);                
+        AudioSource.PlayClipAtPoint(_audioManager.GetLaserSound, transform.position, 0.5f);
     }
+
 
     public void OnTakeDamage()
     {
         if (_bIsShieldActive)
         {
-            OnShieldDisable();
+            OnShieldDamage(1);
             return;
         }
 
         _lives -= 1;
         _uiManager.OnUpdateLives(_lives);
+        _cameraShake.SetTrigger("Shake");
         OnWingDamage();                
                            
         if(_lives <= 0)
@@ -219,12 +293,28 @@ public class Player : MonoBehaviour
         _speedBoostBonus = 1f;
     }
 
-    public void OnShieldActive()
+    public void OnShieldActive(int life, Color[] ShieldColorRange)
     {        
         _bIsShieldActive = true;
+        _shieldLife = life;
+        _shieldColorRange = ShieldColorRange;
         _shield.SetActive(true);
     }
 
+    public void OnShieldDamage(int damage)
+    {
+        if (_shieldLife <= 0)
+        {
+            _bIsShieldActive = false;
+            _shield.SetActive(false);
+            return;
+        }
+
+        _shieldRenderer.color = _shieldColorRange[_shieldLife-1];
+        _shieldLife--;
+        
+
+    }
     public void OnShieldDisable()
     {
         _bIsShieldActive = false;
@@ -237,6 +327,11 @@ public class Player : MonoBehaviour
         _uiManager.UpdateScore(_score);
     }
     
+    public void OnAmmoActive(int ammo)
+    {
+        _currentAmmo += ammo;
+        _uiManager.OnAmmoUpdate(_currentAmmo);
+    }
 }
 
 

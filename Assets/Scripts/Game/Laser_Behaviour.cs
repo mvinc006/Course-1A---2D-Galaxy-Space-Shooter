@@ -11,10 +11,18 @@ public class Laser_Behaviour : MonoBehaviour
 
     private bool _hasCollided;
 
+    private void Start()
+    {
+        if (_direction == Vector3.down)
+            gameObject.tag = "Enemy";
+        else
+            gameObject.tag = "Laser";
+    }
+
     void Update()
     {      
         transform.Translate(_direction * _laserSpeed * Time.deltaTime);
-        if (_direction == Vector3.up)
+        if (_direction == Vector3.up) 
             OnPlayerLaserMove();
         else
             OnEnemyLaserMove();        
@@ -46,7 +54,7 @@ public class Laser_Behaviour : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         
-        if (collision.CompareTag("Player") && collision.TryGetComponent(out Player player) && !_hasCollided && !_allowMultipleCollisions)
+        if (collision.CompareTag("Player") && collision.TryGetComponent(out Player player) && !_hasCollided && !_allowMultipleCollisions && gameObject.CompareTag("Enemy"))
         {                       
             foreach(Laser_Behaviour laser in transform.parent.GetComponentsInChildren<Laser_Behaviour>())
             {
@@ -56,7 +64,7 @@ public class Laser_Behaviour : MonoBehaviour
             player.OnTakeDamage();
             Destroy(gameObject.transform.parent.gameObject);
         }
-        else if (collision.CompareTag("Player") && collision.TryGetComponent(out Player _player) && _allowMultipleCollisions)
+        else if (collision.CompareTag("Player") && collision.TryGetComponent(out Player _player) && _allowMultipleCollisions && gameObject.CompareTag("Enemy"))
         {
             _player.OnTakeDamage();
             Destroy(gameObject);                    
