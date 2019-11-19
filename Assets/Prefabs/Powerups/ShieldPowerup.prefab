@@ -164,8 +164,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _powerupMoveSpeed: 4
   _shieldLife: 3
+  _ammo: 100
   _duration: 0
-  _powerupType: 1
+  _powerupType: 3
   _shieldHitColorRange:
   - {r: 1, g: 0.039559267, b: 0, a: 0.20784314}
   - {r: 0, g: 1, b: 0.95796084, a: 0.54509807}

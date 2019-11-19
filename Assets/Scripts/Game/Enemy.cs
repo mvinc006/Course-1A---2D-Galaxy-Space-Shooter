@@ -13,6 +13,7 @@ public class Enemy : MonoBehaviour
 
     private Player _player;
     private Collider2D _collider;
+    private bool _missileTracked;
     private float _canFire;
     private void Start()
     {
@@ -35,6 +36,16 @@ public class Enemy : MonoBehaviour
             Debug.LogError("Enemy:: Missing reference 'ExplosionPrefab' must be assinged in inspector.");
         if (!_laserPrefab)
             Debug.LogError("Enemy:: Missing reference 'LaserPrefab' must be assinged in inspector.");
+    }
+
+    public void OnMissileTracked()
+    {
+        _missileTracked = true;
+    }
+
+    public bool OnCheckMissileTracked()
+    {
+        return _missileTracked;
     }
 
     private void Fire()
@@ -70,7 +81,7 @@ public class Enemy : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Laser"))
+        if (other.CompareTag("Laser") || other.CompareTag("Missile"))
         {
         
             Destroy(other.gameObject);

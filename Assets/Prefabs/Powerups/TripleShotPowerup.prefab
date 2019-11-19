@@ -162,6 +162,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff7e58be304a8c244ba9e073c5dccaa4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 4
+  _powerupMoveSpeed: 4
+  _shieldLife: 0
+  _ammo: 100
   _duration: 8
-  _powerupType: 0
+  _powerupType: 1
+  _shieldHitColorRange: []

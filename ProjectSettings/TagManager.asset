@@ -12,6 +12,7 @@ TagManager:
   - Shield
   - Game_Manager
   - Audio_Manager
+  - Missile
   layers:
   - Default
   - TransparentFX

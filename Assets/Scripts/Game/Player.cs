@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] GameObject _laser;
     [SerializeField] GameObject _tripleShotLaser;
+    [SerializeField] GameObject _missle;
     [SerializeField] GameObject _shield;
     [SerializeField] Transform _laserContainer;
 
@@ -21,7 +22,8 @@ public class Player : MonoBehaviour
     [SerializeField, Range(0.01f, 2.0f)] float _fireRate = 0.5f;
     [SerializeField, Range(1f, 3f)] float _thrusterBoostTime;
     [SerializeField, Range(0f, 256)] int _currentAmmo = 15;
-    [SerializeField] int _lives = 3;
+    [SerializeField] int _maxLives = 3;
+    
 
     private const float _verticalBoundMin = -3.8f;
     private const float _verticalBoundMax = 0f;
@@ -32,25 +34,28 @@ public class Player : MonoBehaviour
     private Audio_Manager _audioManager;
     private UI_Manager _uiManager;
     private Animator _anim;
-    private SpriteRenderer _shieldRenderer;
+    private SpriteRenderer _shieldRenderer;   
     private Color[] _shieldColorRange;
 
     private float _canFire = -1f;
     private float _canBoost = 3f;
+    private int _lives = 3;
     private bool _boostRecharging;
     private float _speedBoostBonus = 1f;
     private float _thrusterSpeedBonus = 1f;
     private int _shieldLife = 0;
     private int _score = 0;
     private bool _bIsTripleShotActive;
+    private bool _bIsMissileShotActive;
     private bool _bIsSpeedBoostActive;
     private bool _bIsShieldActive;
     private IEnumerator TripleShot;
     private IEnumerator SpeedBoost;
+    private IEnumerator MissileShot;
 
     void Start()
     {
-        transform.position = new Vector3(0f, -3.8f, 0f);
+        transform.position = new Vector3(0f, -3.8f, 0f);       
         InitCheck();
         _uiManager.OnThrusterUpdate(_canBoost, _thrusterBoostTime);
         _uiManager.OnAmmoUpdate(_currentAmmo);
@@ -184,25 +189,63 @@ public class Player : MonoBehaviour
         // TripleShot is a powerup and therefore exempt from the rules of ammunition
         if (_bIsTripleShotActive)
         {
-            Instantiate(_tripleShotLaser, transform.position, Quaternion.identity, _laserContainer).name = "TripleShot";                        
-        }
-        
-        if(!_bIsTripleShotActive && _currentAmmo > 0)
+            OnFireTripleShot();            
+        }        
+        else if (_bIsMissileShotActive)
         {
-            Instantiate(_laser, transform.position + (Vector3.up * 1.05f), Quaternion.identity, _laserContainer).name = "Player_Laser";
-            _currentAmmo--;
-            _uiManager.OnAmmoUpdate(_currentAmmo);
+            OnMissileShot();
         }
+        else if(_currentAmmo > 0)
+        {
+            OnFireStandardShot();
+        }        
         else
-        {
-            // out of ammo for primary weapon
+        {            
             _uiManager.OnAmmoUpdate(_currentAmmo);
             return;
-        }
+        }        
+    }
 
+    private void OnFireStandardShot()
+    {
+        Instantiate(_laser, transform.position + (Vector3.up * 1.05f), Quaternion.identity, _laserContainer).name = "Player_Laser";
+        _currentAmmo--;
+        _uiManager.OnAmmoUpdate(_currentAmmo);
         AudioSource.PlayClipAtPoint(_audioManager.GetLaserSound, transform.position, 0.5f);
     }
 
+    private void OnFireTripleShot()
+    {
+        Instantiate(_tripleShotLaser, transform.position, Quaternion.identity, _laserContainer).name = "TripleShot";
+        AudioSource.PlayClipAtPoint(_audioManager.GetLaserSound, transform.position, 0.5f);
+    }
+
+    private void OnMissileShot()
+    {
+        float closestDistance = 9999;
+        Enemy bestTarget = null;
+
+        // Iterate through the scenes list of enemies and check which is the closest to us.
+        foreach(Enemy target in GameObject.FindObjectsOfType<Enemy>())
+        {
+            // check if the target is already tracked
+            if (!target.OnCheckMissileTracked())
+            {
+                Vector2 distance = target.transform.position - transform.position;
+                if(distance.magnitude < closestDistance)
+                {
+                    bestTarget = target;
+                }
+            }
+        }
+
+        if(bestTarget != null)
+        {
+            bestTarget.OnMissileTracked();
+            Instantiate(_missle, transform.position, Quaternion.identity).GetComponent<Missile_Behaviour>().OnSetTarget(bestTarget.transform);
+        }
+            
+    }
 
     public void OnTakeDamage()
     {
@@ -267,11 +310,17 @@ public class Player : MonoBehaviour
         if (TripleShot !=null)
             StopCoroutine(TripleShot);
 
+        if(MissileShot != null && _bIsMissileShotActive == true)
+        {
+            StopCoroutine(MissileShot);
+            _bIsMissileShotActive = false;
+        }
+
         TripleShot = TripleShotTimer(duration);
         StartCoroutine(TripleShot);
     }
 
-    public void OnTripleShotDisable()
+    private void OnTripleShotDisable()
     {
         _bIsTripleShotActive = false;
     }
@@ -287,7 +336,7 @@ public class Player : MonoBehaviour
         StartCoroutine(SpeedBoost);
     }
 
-    public void OnSpeedBoostDisable()
+    private void OnSpeedBoostDisable()
     {
         _bIsSpeedBoostActive = false;
         _speedBoostBonus = 1f;
@@ -315,7 +364,7 @@ public class Player : MonoBehaviour
         
 
     }
-    public void OnShieldDisable()
+    private void OnShieldDisable()
     {
         _bIsShieldActive = false;
         _shield.SetActive(false);
@@ -331,6 +380,38 @@ public class Player : MonoBehaviour
     {
         _currentAmmo += ammo;
         _uiManager.OnAmmoUpdate(_currentAmmo);
+    }
+
+    public void OnHealthPickup()
+    {       
+        _lives++;
+        _lives = Mathf.Clamp(_lives, 0, _maxLives);
+        _uiManager.OnUpdateLives(_lives);
+    }
+
+    public void OnMissileActive(WaitForSeconds duration)
+    {
+        _bIsMissileShotActive = true;
+        if (MissileShot != null)
+            StopCoroutine(MissileShot);
+        
+        if(TripleShot!=null && _bIsTripleShotActive == true)
+        {
+            StopCoroutine(TripleShot);
+            _bIsTripleShotActive = false;
+        }
+        MissileShot = MissileTimer(duration);
+        StartCoroutine(MissileShot);
+    }
+
+    private void OnMissileDisable()
+    {
+        _bIsMissileShotActive = false;
+    }
+    private IEnumerator MissileTimer(WaitForSeconds duration)
+    {
+        yield return duration;
+        OnMissileDisable();
     }
 }
 

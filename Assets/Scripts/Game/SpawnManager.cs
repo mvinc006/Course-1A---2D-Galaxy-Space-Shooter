@@ -11,18 +11,35 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] Vector2 _powerupSpawnDelay;
 
     private IEnumerator EnemySpawn;
-    private IEnumerator SpawnPowerups;
-    private bool _bShouldSpawn;
+    private IEnumerator SpawnPowerups;    
+    private bool _bShouldSpawn;        
+    private int[] _powerupWeightTable = 
+        {
+            179, // Ammo = 51.28%
+            48, // Triple Shoot  = 13.67%
+            42, // Speed boost = 11.96%
+            37, // Shield = 10.54%
+            30, // Health = 8.54%
+            15 // Missile = 4.27%
+        }; // total 351
+
+    private int _powerupTotalWeight;
 
     private void Start()
-    {        
+    {     
         _bShouldSpawn = false;
         EnemySpawn = Enemy_Spawn();
         SpawnPowerups = Spawn_Powerups();
+        OnInitPowerUps();
     }
 
-    public void OnLevelStart()
+    private void OnInitPowerUps()
     {
+        // initalize the weighting for loot spawns
+        foreach (int item in _powerupWeightTable){ _powerupTotalWeight += item; }
+    }
+    public void OnLevelStart()
+    {        
         _bShouldSpawn = true;
         StartCoroutine(EnemySpawn);
         StartCoroutine(SpawnPowerups);
@@ -43,10 +60,9 @@ public class SpawnManager : MonoBehaviour
         while (_bShouldSpawn)
         {
             yield return new WaitForSeconds(Random.Range(_powerupSpawnDelay.x, _powerupSpawnDelay.y));
-
-            int randomPowerup = Random.Range(0, _powerups.Length);
+            
             Vector3 randomSpawn = new Vector3(Random.Range(-8f, 8f), 9f, 0f);
-            Instantiate(_powerups[randomPowerup], randomSpawn, Quaternion.identity);            
+            Instantiate(_powerups[WeightPowerUp()], randomSpawn, Quaternion.identity);            
         }        
     }
     public void OnPlayerDeath()
@@ -75,4 +91,29 @@ public class SpawnManager : MonoBehaviour
             Destroy(obj);
         }
     }
+
+    private int WeightPowerUp()
+    {
+        int randomWeight = Random.Range(0, _powerupTotalWeight);
+        Debug.Log("Generated Number: " + randomWeight);
+        for (int i = 0; i < _powerupWeightTable.Length; i++)
+        {
+            if (randomWeight <= _powerupWeightTable[i])
+            {
+
+                Debug.Log("Weight Value: " + randomWeight + " : Matching Weight Value: " + _powerupWeightTable[i] + " : Powerup ID: " + i);
+                return i;
+                
+            }
+
+            else
+            {
+                randomWeight -= _powerupWeightTable[i];
+            }
+                
+        }
+
+        return 0;
+    }
+   
 }

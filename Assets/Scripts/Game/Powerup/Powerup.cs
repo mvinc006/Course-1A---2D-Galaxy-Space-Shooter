@@ -49,6 +49,12 @@ public class Powerup : MonoBehaviour
                     case PowerUpType.Ammo:
                         player.OnAmmoActive(_ammo);
                         break;
+                    case PowerUpType.Health:
+                        player.OnHealthPickup();
+                        break;
+                    case PowerUpType.Missile:
+                        player.OnMissileActive(_expireTime);
+                        break;
                 }
 
                 AudioSource.PlayClipAtPoint(_audioManager.GetPowerupSound, transform.position, 1.0f);
