@@ -166,5 +166,6 @@ MonoBehaviour:
   _shieldLife: 0
   _ammo: 100
   _duration: 8
+  _ownerTag: 
   _powerupType: 1
   _shieldHitColorRange: []

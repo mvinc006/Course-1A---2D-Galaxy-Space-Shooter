@@ -95,22 +95,18 @@ public class SpawnManager : MonoBehaviour
     private int WeightPowerUp()
     {
         int randomWeight = Random.Range(0, _powerupTotalWeight);
-        Debug.Log("Generated Number: " + randomWeight);
+      
         for (int i = 0; i < _powerupWeightTable.Length; i++)
         {
             if (randomWeight <= _powerupWeightTable[i])
-            {
-
-                Debug.Log("Weight Value: " + randomWeight + " : Matching Weight Value: " + _powerupWeightTable[i] + " : Powerup ID: " + i);
-                return i;
-                
+            {                
+                return i;                
             }
 
             else
             {
                 randomWeight -= _powerupWeightTable[i];
-            }
-                
+            }                
         }
 
         return 0;

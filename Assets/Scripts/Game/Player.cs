@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IDamageable
 {
     [SerializeField] GameObject _laser;
     [SerializeField] GameObject _tripleShotLaser;
@@ -34,8 +34,6 @@ public class Player : MonoBehaviour
     private Audio_Manager _audioManager;
     private UI_Manager _uiManager;
     private Animator _anim;
-    private SpriteRenderer _shieldRenderer;   
-    private Color[] _shieldColorRange;
 
     private float _canFire = -1f;
     private float _canBoost = 3f;
@@ -43,20 +41,21 @@ public class Player : MonoBehaviour
     private bool _boostRecharging;
     private float _speedBoostBonus = 1f;
     private float _thrusterSpeedBonus = 1f;
-    private int _shieldLife = 0;
     private int _score = 0;
     private bool _bIsTripleShotActive;
     private bool _bIsMissileShotActive;
     private bool _bIsSpeedBoostActive;
-    private bool _bIsShieldActive;
     private IEnumerator TripleShot;
     private IEnumerator SpeedBoost;
     private IEnumerator MissileShot;
+
+    public string laserMask { get ; set ; }
 
     void Start()
     {
         transform.position = new Vector3(0f, -3.8f, 0f);       
         InitCheck();
+        laserMask = "Player Laser";
         _uiManager.OnThrusterUpdate(_canBoost, _thrusterBoostTime);
         _uiManager.OnAmmoUpdate(_currentAmmo);
     }
@@ -249,10 +248,10 @@ public class Player : MonoBehaviour
 
     public void OnTakeDamage()
     {
-        if (_bIsShieldActive)
-        {
-            OnShieldDamage(1);
-            return;
+        if (_shield.TryGetComponent(out IShield shield))
+        {            
+            if(shield.shieldStatus)
+                return;
         }
 
         _lives -= 1;
@@ -261,7 +260,7 @@ public class Player : MonoBehaviour
         OnWingDamage();                
                            
         if(_lives <= 0)
-            OnGameOver();
+            OnDeath();
         
     }
 
@@ -274,7 +273,7 @@ public class Player : MonoBehaviour
             _rightWing.SetActive(true);        
     }
 
-    private void OnGameOver()
+    public void OnDeath()
     {
         _speed = 0f;                      
         _spawnManager.OnPlayerDeath();
@@ -342,32 +341,10 @@ public class Player : MonoBehaviour
         _speedBoostBonus = 1f;
     }
 
-    public void OnShieldActive(int life, Color[] ShieldColorRange)
-    {        
-        _bIsShieldActive = true;
-        _shieldLife = life;
-        _shieldColorRange = ShieldColorRange;
-        _shield.SetActive(true);
-    }
-
-    public void OnShieldDamage(int damage)
-    {
-        if (_shieldLife <= 0)
-        {
-            _bIsShieldActive = false;
-            _shield.SetActive(false);
-            return;
-        }
-
-        _shieldRenderer.color = _shieldColorRange[_shieldLife-1];
-        _shieldLife--;
-        
-
-    }
-    private void OnShieldDisable()
-    {
-        _bIsShieldActive = false;
-        _shield.SetActive(false);
+    public void OnShieldActive(int life, Color[] ShieldColorRange, string ownerTag)
+    {                
+        if (_shield.TryGetComponent(out IShield shield))
+            shield.OnInit(life, ShieldColorRange, ownerTag);                
     }
    
     public void OnScoreUpdate(int increment)
@@ -413,6 +390,8 @@ public class Player : MonoBehaviour
         yield return duration;
         OnMissileDisable();
     }
+
+
 }
 
 

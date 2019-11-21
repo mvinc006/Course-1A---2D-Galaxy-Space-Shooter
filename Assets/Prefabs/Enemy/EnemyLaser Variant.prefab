@@ -15,7 +15,7 @@ PrefabInstance:
     - target: {fileID: 8318029350218364152, guid: 5495fcd7e8cb3ac43b68029be96aefa9,
         type: 3}
       propertyPath: m_TagString
-      value: Enemy
+      value: Enemy Laser
       objectReference: {fileID: 0}
     - target: {fileID: 4609491223969767623, guid: 5495fcd7e8cb3ac43b68029be96aefa9,
         type: 3}
@@ -105,7 +105,7 @@ PrefabInstance:
     - target: {fileID: 1834289887761593817, guid: 5495fcd7e8cb3ac43b68029be96aefa9,
         type: 3}
       propertyPath: _laserSpeed
-      value: 15
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5495fcd7e8cb3ac43b68029be96aefa9, type: 3}

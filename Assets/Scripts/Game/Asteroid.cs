@@ -22,7 +22,7 @@ public class Asteroid : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.transform.CompareTag("Laser"))
+        if (collision.transform.CompareTag("Player Laser"))
         {
             GameObject explosion = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
             _collider.enabled = false;

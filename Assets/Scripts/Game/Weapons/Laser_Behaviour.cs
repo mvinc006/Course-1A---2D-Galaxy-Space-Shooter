@@ -14,14 +14,15 @@ public class Laser_Behaviour : MonoBehaviour
     private void Start()
     {
         if (_direction == Vector3.down)
-            gameObject.tag = "Enemy";
+            gameObject.tag = "Enemy Laser";
         else
-            gameObject.tag = "Laser";
+            gameObject.tag = "Player Laser";
     }
 
     void Update()
     {      
         transform.Translate(_direction * _laserSpeed * Time.deltaTime);
+        
         if (_direction == Vector3.up) 
             OnPlayerLaserMove();
         else
@@ -52,23 +53,50 @@ public class Laser_Behaviour : MonoBehaviour
             Destroy(transform.parent.gameObject);
     }
     private void OnTriggerEnter2D(Collider2D collision)
+    {        
+        if(collision.TryGetComponent(out IDamageable hitInfo))
+        {
+            // check if we are attacking our a shield
+            if (collision.TryGetComponent(out Shield shieldInfo))
+            {
+                if (gameObject.CompareTag(shieldInfo.laserMask)) 
+                {
+                    return;
+                }
+                else
+                {
+                    MultipleCollisionCheck(hitInfo);
+                }
+            }
+            else if (gameObject.CompareTag(hitInfo.laserMask))
+            {
+                return;                
+            }
+            else
+            {
+                MultipleCollisionCheck(hitInfo);
+                Debug.Log("Laser with tag " + gameObject.tag + " is being destroyed by " + collision.name + " with tag " + collision.tag);                
+            }
+        }       
+    }
+
+    void MultipleCollisionCheck(IDamageable hitInfo)
     {
-        
-        if (collision.CompareTag("Player") && collision.TryGetComponent(out Player player) && !_hasCollided && !_allowMultipleCollisions && gameObject.CompareTag("Enemy"))
-        {                       
-            foreach(Laser_Behaviour laser in transform.parent.GetComponentsInChildren<Laser_Behaviour>())
+        if (!_hasCollided && !_allowMultipleCollisions)
+        {
+            foreach (Laser_Behaviour laser in transform.parent.GetComponentsInChildren<Laser_Behaviour>())
             {
                 laser.OnCollided();
+                Destroy(laser.gameObject);
             }
-          
-            player.OnTakeDamage();
-            Destroy(gameObject.transform.parent.gameObject);
+
+            hitInfo.OnTakeDamage();                       
         }
-        else if (collision.CompareTag("Player") && collision.TryGetComponent(out Player _player) && _allowMultipleCollisions && gameObject.CompareTag("Enemy"))
+        else if (_allowMultipleCollisions)
         {
-            _player.OnTakeDamage();
-            Destroy(gameObject);                    
-        }            
+            hitInfo.OnTakeDamage();
+            Destroy(gameObject);
+        }
     }
 
 }

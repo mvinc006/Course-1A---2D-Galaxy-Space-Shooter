@@ -8,6 +8,7 @@ public class Powerup : MonoBehaviour
     [SerializeField] int _shieldLife;
     [SerializeField] int _ammo = 100;
     [SerializeField] float _duration = 10f;
+    [SerializeField] string _ownerTag;
     [SerializeField] PowerUpType _powerupType;
     [SerializeField] Color[] _shieldHitColorRange;
 
@@ -44,7 +45,7 @@ public class Powerup : MonoBehaviour
                         player.OnSpeedBoostActive(_expireTime);
                         break;
                     case PowerUpType.Shield:
-                        player.OnShieldActive(_shieldLife, _shieldHitColorRange);                        
+                        player.OnShieldActive(_shieldLife, _shieldHitColorRange, _ownerTag);                        
                         break;
                     case PowerUpType.Ammo:
                         player.OnAmmoActive(_ammo);

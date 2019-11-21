@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IDamageable
 {
     [SerializeField, Range(1.0f, 10.0f)] float speed = 4f;
     [SerializeField] Vector2 _fireSpeed;
@@ -15,9 +15,13 @@ public class Enemy : MonoBehaviour
     private Collider2D _collider;
     private bool _missileTracked;
     private float _canFire;
+
+    public string laserMask { get; set; }
+
     private void Start()
-    {
-        InitCheck();                
+    {        
+        InitCheck();
+        laserMask = "Enemy Laser";
     }
 
     private void InitCheck()
@@ -71,7 +75,11 @@ public class Enemy : MonoBehaviour
         transform.Translate(Vector3.down * speed * Time.deltaTime);
     }
 
-    private void OnDeath()
+    public void OnTakeDamage()
+    {
+        OnDeath();
+    }
+    public void OnDeath()
     {
         _player.OnScoreUpdate(_pointsOnKill);
         _collider.enabled = false;
@@ -81,16 +89,19 @@ public class Enemy : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Laser") || other.CompareTag("Missile"))
-        {
-        
-            Destroy(other.gameObject);
+        if (other.CompareTag("Missile"))
+        {            
+            Destroy(other.gameObject);            
             OnDeath();
         }
-        else if (other.CompareTag("Player") || other.CompareTag("Shield"))
-        {
-            _player.OnTakeDamage();
+        else if (other.TryGetComponent(out IDamageable entity) && !other.CompareTag(gameObject.tag))
+        {                        
+            entity.OnTakeDamage();
+            Debug.Log(other.name + " with tag: " + other.tag + " caused " + gameObject.name + " with tag: " + gameObject.tag + " to call OnDeath()");
             OnDeath();
-        }        
-    }
+        }                                    
+    }        
+    
+
+
 }

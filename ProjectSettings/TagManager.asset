@@ -13,6 +13,8 @@ TagManager:
   - Game_Manager
   - Audio_Manager
   - Missile
+  - Player Laser
+  - Enemy Laser
   layers:
   - Default
   - TransparentFX

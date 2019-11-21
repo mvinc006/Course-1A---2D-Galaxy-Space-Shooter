@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8351714359803131335}
   m_Layer: 0
   m_Name: TripleShot
-  m_TagString: Untagged
+  m_TagString: Laser
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -100,6 +100,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4609491223969767623, guid: 5495fcd7e8cb3ac43b68029be96aefa9,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5495fcd7e8cb3ac43b68029be96aefa9, type: 3}
 --- !u!4 &3711475697060645556 stripped
@@ -175,6 +180,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4609491223969767623, guid: 5495fcd7e8cb3ac43b68029be96aefa9,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5495fcd7e8cb3ac43b68029be96aefa9, type: 3}
 --- !u!4 &3575240805070702979 stripped
@@ -249,6 +259,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4609491223969767623, guid: 5495fcd7e8cb3ac43b68029be96aefa9,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5495fcd7e8cb3ac43b68029be96aefa9, type: 3}
