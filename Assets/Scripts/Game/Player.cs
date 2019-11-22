@@ -82,8 +82,7 @@ public class Player : MonoBehaviour, IDamageable
             _anim = anim;
         else
             Debug.LogError("Player must contain an Animator component");
-        if (_shield.TryGetComponent(out SpriteRenderer renderer))
-            _shieldRenderer = renderer;
+       
 
         // Basic GameObjects and Transforms etc
         if (!_leftWing)

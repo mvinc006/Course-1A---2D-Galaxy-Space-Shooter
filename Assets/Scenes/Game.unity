@@ -825,8 +825,8 @@ MonoBehaviour:
   - {fileID: 8501282348479651804, guid: e01ec105e3948cc4da8d7523e619c3c9, type: 3}
   - {fileID: 4821143241345960248, guid: fcd142fc103707b4cab796e74a44f622, type: 3}
   _enemyContainer: {fileID: 491482899}
-  _enemySpawnDelay: {x: 2, y: 6}
-  _powerupSpawnDelay: {x: 6, y: 12}
+  _enemySpawnDelay: {x: 2, y: 4}
+  _powerupSpawnDelay: {x: 4, y: 8}
 --- !u!1 &692593524
 GameObject:
   m_ObjectHideFlags: 0

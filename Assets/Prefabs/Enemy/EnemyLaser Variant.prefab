@@ -105,7 +105,7 @@ PrefabInstance:
     - target: {fileID: 1834289887761593817, guid: 5495fcd7e8cb3ac43b68029be96aefa9,
         type: 3}
       propertyPath: _laserSpeed
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5495fcd7e8cb3ac43b68029be96aefa9, type: 3}
