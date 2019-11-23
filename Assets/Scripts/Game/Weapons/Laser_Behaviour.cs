@@ -57,7 +57,7 @@ public class Laser_Behaviour : MonoBehaviour
         if(collision.TryGetComponent(out IDamageable hitInfo))
         {
             // check if we are attacking our a shield
-            if (collision.TryGetComponent(out IShield shieldInfo))
+            if (collision.TryGetComponent(out Shield_Base shieldInfo))
             {
                 if (gameObject.CompareTag(shieldInfo.laserMask)) 
                 {

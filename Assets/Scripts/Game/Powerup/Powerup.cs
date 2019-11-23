@@ -34,27 +34,27 @@ public class Powerup : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
-            if (collision.TryGetComponent(out Player player))
+            if (collision.TryGetComponent(out Powerup_Manager powerupManager))
             {
                 switch (_powerupType)
                 {
                     case PowerUpType.TripleShot:
-                        player.OnTripleShotActive(_expireTime);
+                        powerupManager.OnTripleShotActive(_expireTime);
                         break;
                     case PowerUpType.SpeedBoost:
-                        player.OnSpeedBoostActive(_expireTime);
+                        powerupManager.OnSpeedBoostActive(_expireTime);
                         break;
                     case PowerUpType.Shield:
-                        player.OnShieldActive(_shieldLife, _shieldHitColorRange, _ownerTag);                        
+                        powerupManager.OnShieldActive(_shieldLife, _shieldHitColorRange, _ownerTag);                        
                         break;
                     case PowerUpType.Ammo:
-                        player.OnAmmoActive(_ammo);
+                        powerupManager.OnAmmoActive(_ammo);
                         break;
                     case PowerUpType.Health:
-                        player.OnHealthPickup();
+                        powerupManager.OnHealthPickup();
                         break;
                     case PowerUpType.Missile:
-                        player.OnMissileActive(_expireTime);
+                        powerupManager.OnMissileActive(_expireTime);
                         break;
                 }
 
