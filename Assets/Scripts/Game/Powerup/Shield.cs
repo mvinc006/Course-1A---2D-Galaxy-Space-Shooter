@@ -5,7 +5,6 @@ using UnityEngine;
 public class Shield : MonoBehaviour, IDamageable, IShield
 {
     public int health;
-
     public Color[] shieldColorRange { get ; set ; }
     public int shieldColorRangeIndex { get; set; }
     public bool shieldStatus { get ; set; }
