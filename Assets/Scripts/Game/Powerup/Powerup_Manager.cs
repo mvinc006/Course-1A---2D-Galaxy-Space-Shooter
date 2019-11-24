@@ -4,14 +4,12 @@ using UnityEngine;
 
 public class Powerup_Manager: MonoBehaviour
 {
-
     [SerializeField] GameObject _tripleShotLaser;
     [SerializeField] GameObject _missle;
     [SerializeField] GameObject _shield;
     [SerializeField] Transform _laserContainer;
     [SerializeField] Audio_Manager _audioManager;
     private Player _player;
-
     private float _speedBoostBonus = 1f;
     private bool _bIsTripleShotActive;
     private bool _bIsMissileShotActive;
@@ -28,8 +26,19 @@ public class Powerup_Manager: MonoBehaviour
     private void Start()
     {
         if (TryGetComponent(out Player player))
-            _player = player;
+            _player = player;        
     }
+
+    private void OnEnable()
+    {
+        Powerup.TripleShotRaised += OnTripleShotActive;
+        Powerup.SpeedBoostRaised += OnSpeedBoostActive;
+        Powerup.ShieldRaised += OnShieldActive;
+        Powerup.MissileRaised += OnMissileActive;
+        Powerup.HealthRaised += OnHealthPickup;
+        Powerup.AmmoRaised += OnAmmoActive;        
+    }
+
     public void OnFireTripleShot()
     {
         Instantiate(_tripleShotLaser, transform.position, Quaternion.identity, _laserContainer).name = "TripleShot";

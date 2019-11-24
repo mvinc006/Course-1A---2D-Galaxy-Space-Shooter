@@ -7,7 +7,6 @@ public class Player : MonoBehaviour, IDamageable
 {
 
     [SerializeField, Space] Animator _cameraShake;
-
     [SerializeField, Space, Range(1.0f, 10.0f)] float _speed = 3f;
     [SerializeField, Range(0.01f, 2.0f)] float _fireRate = 0.5f;
     [SerializeField, Range(1f, 3f)] float _thrusterBoostTime;

@@ -15,6 +15,25 @@ public class Powerup : MonoBehaviour
     private Audio_Manager _audioManager;
     private WaitForSeconds _expireTime;
 
+    // define a delegate
+    // define an event
+    // raise the event
+
+
+    public delegate void OnTripleShotEventHandler(WaitForSeconds duration);
+    public delegate void OnSpeedBoostEventHandler(WaitForSeconds duration);
+    public delegate void OnShieldEventHandler(int life, Color[] ShieldColorRange, string ownerTag);
+    public delegate void OnAmmoEventHandler(int ammo);
+    public delegate void OnHealthEventHandler();
+    public delegate void OnMissileEventHandler(WaitForSeconds duration);
+
+    public static event OnTripleShotEventHandler TripleShotRaised;
+    public static event OnSpeedBoostEventHandler SpeedBoostRaised;
+    public static event OnShieldEventHandler ShieldRaised;
+    public static event OnAmmoEventHandler AmmoRaised;
+    public static event OnHealthEventHandler HealthRaised;
+    public static event OnMissileEventHandler MissileRaised;   
+
     private void Start()
     {
         _expireTime = new WaitForSeconds(_duration);
@@ -30,6 +49,7 @@ public class Powerup : MonoBehaviour
             Destroy(gameObject);
     }
 
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
@@ -39,22 +59,34 @@ public class Powerup : MonoBehaviour
                 switch (_powerupType)
                 {
                     case PowerUpType.TripleShot:
-                        powerupManager.OnTripleShotActive(_expireTime);
+                       // powerupManager.OnTripleShotActive(_expireTime);
+                        // event
+                        TripleShotRaised(_expireTime);
                         break;
                     case PowerUpType.SpeedBoost:
-                        powerupManager.OnSpeedBoostActive(_expireTime);
+                    //    powerupManager.OnSpeedBoostActive(_expireTime);
+                        // event
+                        SpeedBoostRaised(_expireTime);
                         break;
                     case PowerUpType.Shield:
-                        powerupManager.OnShieldActive(_shieldLife, _shieldHitColorRange, _ownerTag);                        
+                   //     powerupManager.OnShieldActive(_shieldLife, _shieldHitColorRange, _ownerTag);
+                        // event
+                        ShieldRaised(_shieldLife, _shieldHitColorRange, _ownerTag);
                         break;
                     case PowerUpType.Ammo:
-                        powerupManager.OnAmmoActive(_ammo);
+                   //     powerupManager.OnAmmoActive(_ammo);
+                        // event
+                        AmmoRaised(_ammo);
                         break;
                     case PowerUpType.Health:
-                        powerupManager.OnHealthPickup();
+                     //   powerupManager.OnHealthPickup();
+                        // event
+                        HealthRaised();
                         break;
                     case PowerUpType.Missile:
-                        powerupManager.OnMissileActive(_expireTime);
+                   //     powerupManager.OnMissileActive(_expireTime);
+                        // event
+                        MissileRaised(_expireTime);
                         break;
                 }
 
