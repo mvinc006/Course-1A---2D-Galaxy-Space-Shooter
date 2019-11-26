@@ -12,44 +12,44 @@ public class TripleShot : Powerup_Base
     private float _fireCheck = -1f;
     private Transform _parent;
 
-    public void OnFireTripleShot()
+    private void OnFireTripleShot()
     {
         Instantiate(_prefab, _parent.position, Quaternion.identity).name = "TripleShot";
       //  AudioSource.PlayClipAtPoint(_manager.GetLaserSound, transform.position, 0.5f);
     }
 
-    public void OnTripleShotActive(WaitForSeconds duration)
+    private void OnPowerupEnabled(WaitForSeconds duration)
     {
         _canFire = true;
-        InvokeWeaponChanged(this, true);
+        OnWeaponChange(this, true);
 
         if (Timer != null)
             StopCoroutine(Timer);        
 
-        Timer = TripleShotTimer(duration);
+        Timer = PowerupTimer(duration);
         StartCoroutine(Timer);
     }
 
-    private IEnumerator TripleShotTimer(WaitForSeconds duration)
+    private IEnumerator PowerupTimer(WaitForSeconds duration)
     {
         yield return duration;
         _canFire = false;
-        InvokeWeaponChanged(this, false);
+        OnWeaponChange(this, false);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    protected override void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.TryGetComponent(out Player player))
         {
             OnPickup(this, true);
-            OnTripleShotActive(new WaitForSeconds(_duration));
+            OnPowerupEnabled(new WaitForSeconds(_duration));
             _parent = collision.transform;
         }            
     }
 
-    protected override void OnDisableOtherWeapons(object sender)
+    protected override void OnDisableOtherPowerups(object sender)
     {
-        base.OnDisableOtherWeapons(sender);
+        base.OnDisableOtherPowerups(sender);
         Destroy(this.gameObject);
     }
     protected override void Update()

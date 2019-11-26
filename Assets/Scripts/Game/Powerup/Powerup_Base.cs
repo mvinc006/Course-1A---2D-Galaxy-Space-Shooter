@@ -9,11 +9,15 @@ public abstract class Powerup_Base : MonoBehaviour
     [SerializeField] protected SpriteRenderer _renderer;
     [SerializeField] protected Collider2D _collider;
 
-    public delegate void WeaponChangeEventHandler(object sender, bool isEnabled);
-    public static event WeaponChangeEventHandler PrimaryWeaponChange;
     protected delegate void PowerupChangeEventHandler(object sender);
     protected static event PowerupChangeEventHandler PowerupChanged;
-    protected virtual void InvokeWeaponChanged(object sender, bool isEnabled)
+
+    public delegate void WeaponChangeEventHandler(object sender, bool isEnabled);
+    public static event WeaponChangeEventHandler PrimaryWeaponChange;
+
+    protected abstract void OnTriggerEnter2D(Collider2D collision);
+
+    protected virtual void OnWeaponChange(object sender, bool isEnabled)
     {
         if(PrimaryWeaponChange != null)
         {            
@@ -21,7 +25,7 @@ public abstract class Powerup_Base : MonoBehaviour
         }                    
     }
 
-    protected virtual void OnDisableOtherWeapons(object sender) 
+    protected virtual void OnDisableOtherPowerups(object sender) 
     {
         if(PowerupChanged != null)
         {            
@@ -36,11 +40,11 @@ public abstract class Powerup_Base : MonoBehaviour
         if(PowerupChanged != null && otherPowerupsOverride)
         {
             PowerupChanged(sender); // call the events on any currently subscribed powerups that aren't us
-            PowerupChanged -= OnDisableOtherWeapons; // unsubscribe
+            PowerupChanged -= OnDisableOtherPowerups; // unsubscribe
         }
         else if(PowerupChanged == null && otherPowerupsOverride)
         {
-            PowerupChanged += OnDisableOtherWeapons; // invoked when powerups activate, disabling any others that might exist (weapons only should be single type)
+            PowerupChanged += OnDisableOtherPowerups; // invoked when powerups activate, disabling any others that might exist (weapons only should be single type)
         }                
     }
     protected virtual void Update()
