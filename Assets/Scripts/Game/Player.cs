@@ -25,7 +25,8 @@ public class Player : MonoBehaviour, IDamageable
     private float _canFire = -1f;
     private float _canBoost = 3f;
     private int _lives = 3;
-    private bool _boostRecharging;    
+    private bool _boostRecharging;
+    private bool _weaponChanged;
     private float _thrusterSpeedBonus = 1f;
     private int _score = 0;
 
@@ -38,6 +39,8 @@ public class Player : MonoBehaviour, IDamageable
         laserMask = "Player Laser";
         _playerContainer.GetUIManager().OnThrusterUpdate(_canBoost, _thrusterBoostTime);
         _playerContainer.GetUIManager().OnAmmoUpdate(_currentAmmo);
+        Powerup_Base.PrimaryWeaponChange += OnWeaponChanged;
+        /*Powerup_Base.AddWeaponChangeListener(OnWeaponChanged);*/
     }
 
     private void InitCheck()
@@ -155,7 +158,7 @@ public class Player : MonoBehaviour, IDamageable
         {
             _powerupManager.OnMissileShot();
         }
-        else if(_currentAmmo > 0)
+        else if(_currentAmmo > 0 && !_weaponChanged)
         {
             OnFireStandardShot();
         }        
@@ -172,6 +175,12 @@ public class Player : MonoBehaviour, IDamageable
         _currentAmmo--;
         _playerContainer.GetUIManager().OnAmmoUpdate(_currentAmmo);
         AudioSource.PlayClipAtPoint(_playerContainer.GetLaserSound(), transform.position, 0.5f);
+    }
+
+    private void OnWeaponChanged(object sender, bool disablePrimaryWeapon)
+    {
+        Debug.Log(sender + " has requested to change player weapon change state in " + this + " to: " + disablePrimaryWeapon);
+        _weaponChanged = disablePrimaryWeapon;
     }
 
 
@@ -236,7 +245,7 @@ public class Player : MonoBehaviour, IDamageable
         _lives = Mathf.Clamp(_lives, 0, _maxLives);
         _playerContainer.GetUIManager().OnUpdateLives(_lives);
     }
-
+    
 }
 
 
