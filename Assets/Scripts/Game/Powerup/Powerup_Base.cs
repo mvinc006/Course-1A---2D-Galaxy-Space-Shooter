@@ -9,7 +9,7 @@ public abstract class Powerup_Base : MonoBehaviour
     [SerializeField] protected SpriteRenderer _renderer;
     [SerializeField] protected Collider2D _collider;
 
-    protected delegate void PowerupChangeEventHandler(object sender);
+    protected delegate void PowerupChangeEventHandler(object sender, bool removeFromListener = false);
     protected static event PowerupChangeEventHandler PowerupChanged;
 
     public delegate void WeaponChangeEventHandler(object sender, bool isEnabled);
@@ -25,26 +25,30 @@ public abstract class Powerup_Base : MonoBehaviour
         }                    
     }
 
-    protected virtual void OnDisableOtherPowerups(object sender) 
+    protected virtual void OnPowerupChangedEvent(object sender, bool removeFromListener = false) 
     {
         if(PowerupChanged != null)
-        {            
-            Debug.Log(sender + " is overriding other existing powerups in this powerup group- (" + this + ") will be destroyed");            
-        }            
+        {
+            if (removeFromListener)
+            {
+                PowerupChanged -= OnPowerupChangedEvent;
+                Debug.Log(sender + " is overriding other existing powerups in this powerup group- (" + this + ") will be destroyed");
+            }
+            else
+            {
+                Debug.Log(sender + " has triggered the PowerupChanged event for this group - (sent from: " + this + ")");
+            }            
+        }         
     }
    
-    protected virtual void OnPickup(object sender, bool otherPowerupsOverride)
+    protected virtual void OnPowerupPickedUp(object sender, bool bIsSingleInstancePowerup)
     {
         _collider.enabled = false;
         _renderer.enabled = false;
-        if(PowerupChanged != null && otherPowerupsOverride)
+        if(bIsSingleInstancePowerup)
         {
-            PowerupChanged(sender); // call the events on any currently subscribed powerups that aren't us
-            PowerupChanged -= OnDisableOtherPowerups; // unsubscribe
-        }
-        else if(PowerupChanged == null && otherPowerupsOverride)
-        {
-            PowerupChanged += OnDisableOtherPowerups; // invoked when powerups activate, disabling any others that might exist (weapons only should be single type)
+            PowerupChanged?.Invoke(sender); // call the events on any currently subscribed powerups that aren't us            
+            PowerupChanged += OnPowerupChangedEvent; // subscribe after all other powerups marked as otherPowerupsOverride have responded to the event.
         }                
     }
     protected virtual void Update()

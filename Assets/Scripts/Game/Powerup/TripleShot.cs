@@ -41,15 +41,15 @@ public class TripleShot : Powerup_Base
     {
         if (collision.TryGetComponent(out Player player))
         {
-            OnPickup(this, true);
+            OnPowerupPickedUp(this, true);
             OnPowerupEnabled(new WaitForSeconds(_duration));
             _parent = collision.transform;
         }            
     }
 
-    protected override void OnDisableOtherPowerups(object sender)
+    protected override void OnPowerupChangedEvent(object sender, bool removeFromListener)
     {
-        base.OnDisableOtherPowerups(sender);
+        base.OnPowerupChangedEvent(sender, true);                
         Destroy(this.gameObject);
     }
     protected override void Update()
