@@ -23,14 +23,16 @@ public class Laser_Behaviour : MonoBehaviour
     }
 
     void Update()
-    {
-        _laserRigidbody.MovePosition(transform.position + (_direction * _laserSpeed * Time.fixedDeltaTime));
-        //transform.Translate(_direction * _laserSpeed * Time.deltaTime);
-        
+    {                        
         if (_direction == Vector3.up) 
             OnPlayerLaserMove();
         else
             OnEnemyLaserMove();        
+    }
+
+    private void FixedUpdate()
+    {
+        _laserRigidbody.MovePosition(transform.position + (_direction * _laserSpeed * Time.fixedDeltaTime));
     }
 
     private void OnEnemyLaserMove()
