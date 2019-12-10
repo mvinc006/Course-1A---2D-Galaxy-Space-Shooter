@@ -20,8 +20,8 @@ public class Enemy : Entity_Base, IDamageable
     private void Start()
     {        
         InitCheck();
-        entityRigidBody = GetComponent<Rigidbody2D>();
-        laserMask = "Enemy Laser";
+        _entityRigidBody = GetComponent<Rigidbody2D>();
+        LaserMask = "Enemy Laser";
         SpawnManager.ActiveEnemies.Add(this);
     }
 
@@ -75,9 +75,9 @@ public class Enemy : Entity_Base, IDamageable
     private void Movement()
     {
         if (transform.position.y <= -5.5f && _collider.enabled == true)
-            entityRigidBody.MovePosition(transform.position + new Vector3(Random.Range(-8f, 8f), 9f, 0f));
+            _entityRigidBody.MovePosition(transform.position + new Vector3(Random.Range(-8f, 8f), 9f, 0f));
 
-        entityRigidBody.MovePosition(transform.position + (Vector3.down * _speed * Time.fixedDeltaTime));        
+        _entityRigidBody.MovePosition(transform.position + (Vector3.down * _speed * Time.fixedDeltaTime));        
     }
 
     public override void OnTakeDamage()

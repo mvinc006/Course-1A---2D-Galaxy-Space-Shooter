@@ -22,23 +22,21 @@ public class Player : Entity_Base
     private float _canBoost = 3f;
     private bool _boostRecharging;
     private float _thrusterSpeedBonus = 1f;
-    private float SpeedMultiplier = 1.0f;
+    private float _speedMultiplier = 1.0f;
     private Vector3 _keyboardInput;
 
     void Start()
     {
         transform.position = new Vector3(0f, -3.8f, 0f);
-        entityRigidBody = GetComponent<Rigidbody2D>();
+        _entityRigidBody = GetComponent<Rigidbody2D>();
         InitCheck();
-        laserMask = "Player Laser";
+        LaserMask = "Player Laser";
         _playerContainer.GetUIManager().OnThrusterUpdate(_canBoost, _thrusterBoostTime);
         _playerContainer.GetUIManager().OnAmmoUpdate(_ammoAmount);
     }
 
     private void InitCheck()
-    {
-        // Managers and component checks           
-
+    {       
         if (TryGetComponent(out Animator anim))
             _anim = anim;
         else
@@ -51,21 +49,13 @@ public class Player : Entity_Base
         if (!_playerContainer.GetLeftWing())
             Debug.LogError("Player:: Must assign 'LeftWing' reference in inspector.");
         if (!_playerContainer.GetRightWing())
-            Debug.LogError("Player:: Must assign 'RightWing' reference in inspector.");
-        
+            Debug.LogError("Player:: Must assign 'RightWing' reference in inspector.");        
     }
 
     void Update()
-    {             
-        if (Input.GetKey(KeyCode.Space))
-            OnDealDamage();        
-        if (Input.GetKey(KeyCode.LeftShift) && _boostRecharging == false)
-            OnBoost();        
-        else if (!Input.GetKey(KeyCode.LeftShift) || _boostRecharging == true)
-            OnBoostRecharging();
-
-        _keyboardInput = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0f);
-        OnMove();        
+    {
+        CheckFireInput();
+        CheckMovementInput();        
     }
 
     private void FixedUpdate()
@@ -73,9 +63,26 @@ public class Player : Entity_Base
         CalculateMovement();
     }
 
+    private void CheckFireInput()
+    {
+        if (Input.GetKey(KeyCode.Space))
+            OnDealDamage();
+    }
+
+    private void CheckMovementInput()
+    {
+        _keyboardInput = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0f);
+        if (_keyboardInput.sqrMagnitude > 0f)
+            OnMove();
+        if (Input.GetKey(KeyCode.LeftShift) && _boostRecharging == false)
+            OnBoost();
+        else if (!Input.GetKey(KeyCode.LeftShift) || _boostRecharging == true)
+            OnBoostRecharging();
+    }    
+
     private void CalculateMovement()
     {
-        Vector3 destination = transform.position + (_keyboardInput * _speed * SpeedMultiplier * _thrusterSpeedBonus * Time.fixedDeltaTime);
+        Vector3 destination = transform.position + (_keyboardInput * _speed * _speedMultiplier * _thrusterSpeedBonus * Time.fixedDeltaTime);
                 
         destination.y = Mathf.Clamp(destination.y, _verticalBoundMin, _verticalBoundMax); // Clamp Y
         // Wrap around
@@ -84,7 +91,7 @@ public class Player : Entity_Base
         if (destination.x > _horizontalBoundMax)
             destination.x = _horizontalBoundMin;
 
-        entityRigidBody.MovePosition(destination);                              
+        _entityRigidBody.MovePosition(destination);                              
     }
 
     public void OnMove()
@@ -235,7 +242,7 @@ public class Player : Entity_Base
 
     public override void OnSpeedBoost(float speed)
     {
-        SpeedMultiplier = speed;
+        _speedMultiplier = speed;
     }
 }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface IDamageable
 {
-    string laserMask { get; set; }
+    string LaserMask { get; set; }
     void OnTakeDamage();
     void OnDeath();
 }

@@ -458,8 +458,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00814002baa992f47bb2ff650e8159ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  powerupDuration: 1
-  collectionMask: Player
-  powerupPrefab: {fileID: 0}
-  powerupClip: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}
-  powerupLabel: {fileID: 2071598261}
+  _powerupDuration: 1
+  _collectingEntityTag: Player
+  _powerupPrefab: {fileID: 0}
+  _powerupClip: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}
+  _powerupLabel: {fileID: 2071598261}

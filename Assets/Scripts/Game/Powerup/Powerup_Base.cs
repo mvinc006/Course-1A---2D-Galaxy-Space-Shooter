@@ -6,40 +6,40 @@ using UnityEngine;
 public abstract class Powerup_Base : MonoBehaviour
 {
     [Header("Base Class Settings")]
-    [SerializeField] protected float powerupDuration;
-    [SerializeField] protected string collectingEntityTag;
-    [SerializeField] protected GameObject powerupPrefab;
-    [SerializeField] protected AudioClip powerupClip;
+    [SerializeField] protected float _powerupDuration;
+    [SerializeField] protected string _collectingEntityTag;
+    [SerializeField] protected GameObject _powerupPrefab;
+    [SerializeField] protected AudioClip _powerupClip;
 
-    protected GameObject owner;    
-    private bool isActive;
+    protected GameObject _owner;    
+    private bool _isActive;
 
     protected abstract void AddToListener();    // Not all powerups will register to a listener, implementing class to decide how this is handled. 
     protected abstract void RemoveFromListener();   
 
     public virtual void Activate(GameObject owner)  // Called by the OnTriggerEnter2D event
     {
-        this.owner = owner;        
-        isActive = true;
-        powerupDuration += Time.time;
-        if(powerupClip)
-            AudioSource.PlayClipAtPoint(powerupClip, transform.position);
+        this._owner = owner;        
+        _isActive = true;
+        _powerupDuration += Time.time;
+        if(_powerupClip)
+            AudioSource.PlayClipAtPoint(_powerupClip, transform.position);
 
         AddToListener();
-        Debug.Log(this + " Powerup Activated for " + powerupDuration + " second(s)");
+        Debug.Log(this + " Powerup Activated for " + _powerupDuration + " second(s)");
     }
 
     protected virtual void OnEntityFiredWeapon()
     {
-        if (powerupPrefab != null)
-            Instantiate(powerupPrefab, owner.transform.position, Quaternion.identity);
+        if (_powerupPrefab != null)
+            Instantiate(_powerupPrefab, _owner.transform.position, Quaternion.identity);
     }
 
     protected virtual void Update()
     {
-        if (isActive)
+        if (_isActive)
         {            
-            if (Time.time > powerupDuration)
+            if (Time.time > _powerupDuration)
                 StopPowerup();
         }
         else
@@ -57,12 +57,20 @@ public abstract class Powerup_Base : MonoBehaviour
         Destroy(this.gameObject);
     }
 
-    public virtual void SetCollectionMask(string mask) { collectingEntityTag = mask; }
+    public virtual void SetCollectionMask(string mask) { _collectingEntityTag = mask; }
 
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.TryGetComponent(out Entity_Base entity) && collision.CompareTag(collectingEntityTag))
-        {            
+        Debug.Log(collision.gameObject + " has collided with " + this.gameObject);
+        Debug.Log(collision.gameObject + " Tag Name: " + collision.tag);
+        Debug.Log("Comparing against: " + _collectingEntityTag);
+        
+
+        if (collision.TryGetComponent(out Entity_Base entity))
+        {
+            if (!collision.CompareTag(_collectingEntityTag))
+                return;
+
             if(TryGetComponent(out SpriteRenderer spriteRenderer))
                 spriteRenderer.enabled = false;
             if(TryGetComponent(out Collider2D collider))

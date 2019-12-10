@@ -7,7 +7,7 @@ public abstract class Shield_Base : MonoBehaviour, IDamageable
     public Color[] shieldColorRange { get; set; }
     public int shieldColorRangeIndex { get; set; }
     public bool shieldStatus { get; set; }
-    public string laserMask { get ; set ; }
+    public string LaserMask { get ; set ; }
     public int health;
 
     public virtual void OnInit(int health, Color[] shieldColorRange, string ownerTag)
@@ -15,7 +15,7 @@ public abstract class Shield_Base : MonoBehaviour, IDamageable
         this.health = health;
         this.shieldColorRange = shieldColorRange;
         shieldStatus = true;
-        laserMask = ownerTag;
+        LaserMask = ownerTag;
         shieldColorRangeIndex = shieldColorRange.Length - 1;
         gameObject.SetActive(true); 
     }

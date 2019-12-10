@@ -5,7 +5,7 @@ using UnityEngine;
 public class SpeedBoost : Powerup_Base
 {
     [Header("Implementing Class Settings")]
-    [SerializeField, Range(2f, 10f)] float speedBoost = 2f;
+    [SerializeField, Range(2f, 10f)] float _speedBoost = 2f;
     protected static SpeedBoost Instance;
     
     protected override void AddToListener()
@@ -30,15 +30,15 @@ public class SpeedBoost : Powerup_Base
 
     private void ActivateSpeedBoost()
     {
-        if(owner.TryGetComponent(out IMove entity))
+        if(_owner.TryGetComponent(out IMove entity))
         {
-            entity.OnSpeedBoost(speedBoost);
+            entity.OnSpeedBoost(_speedBoost);
         }
     }
 
     public override void StopPowerup()
     {
-        if(owner.TryGetComponent(out IMove entity))
+        if(_owner.TryGetComponent(out IMove entity))
         {
             entity.OnSpeedBoost(1f);
         }

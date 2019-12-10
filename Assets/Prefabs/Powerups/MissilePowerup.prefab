@@ -417,10 +417,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdbda09c239102648833c155456e39ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  powerupDuration: 15
-  collectionMask: Player
-  powerupPrefab: {fileID: 8522384520271428877, guid: aad6bc91c2ed8c94f87e01c11d52fe0d,
+  _powerupDuration: 15
+  _collectingEntityTag: Player
+  _powerupPrefab: {fileID: 8522384520271428877, guid: aad6bc91c2ed8c94f87e01c11d52fe0d,
     type: 3}
-  powerupClip: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}
-  fireRate: 1
-  powerupLabel: {fileID: 457002982}
+  _powerupClip: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}
+  _fireRate: 1
+  _powerupLabel: {fileID: 0}

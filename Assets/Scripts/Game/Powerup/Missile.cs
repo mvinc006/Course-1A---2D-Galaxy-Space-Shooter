@@ -6,19 +6,19 @@ using UnityEngine;
 public class Missile : Powerup_Base
 {
     [Header("Implementing Class Settings")]
-    [SerializeField] float fireRate;
-    [SerializeField] private TMP_Text powerupLabel;
-    private float canFire;
+    [SerializeField] float _fireRate;
+    [SerializeField] private TMP_Text _powerupLabel;
+    private float _canFire;
     protected static Missile Instance;
     protected override void AddToListener()
     {
-        if (owner.TryGetComponent(out IDealDamage entityShooting))
+        if (_owner.TryGetComponent(out IDealDamage entityShooting))
             entityShooting.OnEntityFireWeapon += OnEntityFiredWeapon;
     }
 
     protected override void RemoveFromListener()
     {
-        if (owner.TryGetComponent(out IDealDamage entityShooting))
+        if (_owner.TryGetComponent(out IDealDamage entityShooting))
             entityShooting.OnEntityFireWeapon -= OnEntityFiredWeapon;
     }
 
@@ -28,15 +28,15 @@ public class Missile : Powerup_Base
             Instance.StopPowerup();
                 
         Instance = this;
-        powerupLabel.enabled = false;
+        _powerupLabel.enabled = false;
         base.Activate(owner);
     }
 
     protected override void OnEntityFiredWeapon()
     {
-        if (Time.time > canFire)
+        if (Time.time > _canFire)
         {
-            canFire = Time.time + fireRate;
+            _canFire = Time.time + _fireRate;
             base.OnEntityFiredWeapon();                                        
         }
     }

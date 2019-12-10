@@ -12,8 +12,8 @@ public abstract class Entity_Base : MonoBehaviour, IDamageable, IDealDamage, IMo
     [SerializeField] protected float _horizontalBoundMin = -10f;
     [SerializeField] protected float _horizontalBoundMax = 10f;
 
-    protected Rigidbody2D entityRigidBody;
-    public string laserMask { get; set; }   // Implemetning class sets this on Awake/Start so their own lasers don't harm them
+    protected Rigidbody2D _entityRigidBody;
+    public string LaserMask { get; set; }   // Implemetning class sets this on Awake/Start so their own lasers don't harm them
     public event Action OnEntityFireWeapon;
     
 

@@ -5,27 +5,27 @@ using UnityEngine;
 public class TripleShot : Powerup_Base
 {
     [Header("Implementing Class Settings")]
-    [SerializeField] float fireRate;
-    [SerializeField] AudioClip laserSound;
+    [SerializeField] float _fireRate;
+    [SerializeField] AudioClip _laserSound;
 
-    private float canFire;
+    private float _canFire;
     protected static TripleShot Instance;    
     
     protected override void AddToListener()
     {
-        if (owner.TryGetComponent(out IDealDamage shootingEntity))
+        if (_owner.TryGetComponent(out IDealDamage shootingEntity))
         {
             shootingEntity.OnEntityFireWeapon += OnEntityFiredWeapon;
-            Debug.Log(this + " Successfully Registered to " + owner.name);
+            Debug.Log(this + " Successfully Registered to " + _owner.name);
         }            
     }
 
     protected override void RemoveFromListener()
     {
-        if (owner.TryGetComponent(out IDealDamage shootingEntity))
+        if (_owner.TryGetComponent(out IDealDamage shootingEntity))
         {
             shootingEntity.OnEntityFireWeapon -= OnEntityFiredWeapon;
-            Debug.Log(this + " Successfully Un-Registered to " + owner.name);
+            Debug.Log(this + " Successfully Un-Registered to " + _owner.name);
         }            
     }
 
@@ -40,12 +40,12 @@ public class TripleShot : Powerup_Base
 
     protected override void OnEntityFiredWeapon()
     {
-        if (Time.time > canFire)
+        if (Time.time > _canFire)
         {
-            canFire = Time.time + fireRate;
+            _canFire = Time.time + _fireRate;
 
-            if(laserSound)
-                AudioSource.PlayClipAtPoint(laserSound, transform.position);
+            if(_laserSound)
+                AudioSource.PlayClipAtPoint(_laserSound, transform.position);
             
             base.OnEntityFiredWeapon();           
         }

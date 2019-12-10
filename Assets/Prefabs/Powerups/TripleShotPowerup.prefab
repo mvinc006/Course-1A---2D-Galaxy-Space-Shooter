@@ -162,10 +162,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b967adcc7d433634dbdbf44e32bc8c2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  powerupDuration: 15
-  collectionMask: Player
-  powerupPrefab: {fileID: 5408697667792998211, guid: 8f7144a9d1d62d8449b2647363a8d03d,
+  _powerupDuration: 15
+  _collectingEntityTag: Player
+  _powerupPrefab: {fileID: 5408697667792998211, guid: 8f7144a9d1d62d8449b2647363a8d03d,
     type: 3}
-  powerupClip: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}
-  fireRate: 0.15
-  laserSound: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
+  _powerupClip: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}
+  _fireRate: 0.1
+  _laserSound: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}

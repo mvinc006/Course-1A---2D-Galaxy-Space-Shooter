@@ -8,13 +8,12 @@ public class Missile_Behaviour : MonoBehaviour
     [SerializeField, Range(1,60)] float speed = 6;
     [SerializeField, Range(1, 300)] float _maxRotationSpeed = 300;
     [SerializeField] Transform _target;
-    private Rigidbody2D rb;
-    private bool isSearchingForTarget;
-    private float trackingTimer = 0f;
+    private Rigidbody2D _missileRigidbody;
+    private float _trackingTimer = 0f;
     
     private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        _missileRigidbody = GetComponent<Rigidbody2D>();
         Destroy(this.gameObject, _lifeTime);
     }
 
@@ -24,7 +23,7 @@ public class Missile_Behaviour : MonoBehaviour
             MoveToTarget();
         else
         {
-            rb.MovePosition(transform.position + (Vector3.up * speed * Time.deltaTime));
+            _missileRigidbody.MovePosition(transform.position + (Vector3.up * speed * Time.deltaTime));
             FindTarget();
         }
             
@@ -37,14 +36,14 @@ public class Missile_Behaviour : MonoBehaviour
 
         float value = Vector3.Cross(pointToTarget, transform.up).z;       
 
-        rb.angularVelocity = value * _maxRotationSpeed;
-        rb.velocity = transform.up * speed;
+        _missileRigidbody.angularVelocity = value * _maxRotationSpeed;
+        _missileRigidbody.velocity = transform.up * speed;
     }
 
     private void FindTarget()
     {        
-        if (Time.deltaTime > trackingTimer)
-            trackingTimer = Time.deltaTime + 0.5f;
+        if (Time.deltaTime > _trackingTimer)
+            _trackingTimer = Time.deltaTime + 0.5f;
         else
             return;
 
