@@ -6,43 +6,33 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class Player : Entity_Base
 {
-
+    [Header("Implementing Class Settings")]
     [SerializeField, Space] Animator _cameraShake;
-    [SerializeField, Space, Range(1.0f, 10.0f)] float _speed = 3f;
     [SerializeField, Range(0.01f, 2.0f)] float _fireRate = 0.5f;
     [SerializeField, Range(1f, 3f)] float _thrusterBoostTime;
-    [SerializeField, Range(0f, 256)] int _currentAmmo = 15;
+    [SerializeField, Range(0f, 256)] int _ammoAmount = 15;
     [SerializeField] int _maxLives = 3;    
 
-    private const float _verticalBoundMin = -3.8f;
-    private const float _verticalBoundMax = 0f;
-    private const float _horizontalBoundMin = -10f;
-    private const float _horizontalBoundMax = 10f;    
-    
     private Animator _anim;
     private Player_Containers _playerContainer;
-    private Rigidbody2D playerRigidbodyComponent;
-
-    private float _canFire = -1f;
-    private float _canBoost = 3f;
+    
+    private float _canFire = -1f;    
     private int _lives = 3;
+    private int _score = 0;
+    private float _canBoost = 3f;
     private bool _boostRecharging;
     private float _thrusterSpeedBonus = 1f;
-    private int _score = 0;
-
-     
     private float SpeedMultiplier = 1.0f;
-    
+    private Vector3 _keyboardInput;
 
-    private Vector3 playerInput;
     void Start()
     {
         transform.position = new Vector3(0f, -3.8f, 0f);
-        playerRigidbodyComponent = GetComponent<Rigidbody2D>();
+        entityRigidBody = GetComponent<Rigidbody2D>();
         InitCheck();
         laserMask = "Player Laser";
         _playerContainer.GetUIManager().OnThrusterUpdate(_canBoost, _thrusterBoostTime);
-        _playerContainer.GetUIManager().OnAmmoUpdate(_currentAmmo);
+        _playerContainer.GetUIManager().OnAmmoUpdate(_ammoAmount);
     }
 
     private void InitCheck()
@@ -74,7 +64,7 @@ public class Player : Entity_Base
         else if (!Input.GetKey(KeyCode.LeftShift) || _boostRecharging == true)
             OnBoostRecharging();
 
-        playerInput = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0f);
+        _keyboardInput = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0f);
         OnMove();        
     }
 
@@ -85,7 +75,7 @@ public class Player : Entity_Base
 
     private void CalculateMovement()
     {
-        Vector3 destination = transform.position + (playerInput * _speed * SpeedMultiplier * _thrusterSpeedBonus * Time.fixedDeltaTime);
+        Vector3 destination = transform.position + (_keyboardInput * _speed * SpeedMultiplier * _thrusterSpeedBonus * Time.fixedDeltaTime);
                 
         destination.y = Mathf.Clamp(destination.y, _verticalBoundMin, _verticalBoundMax); // Clamp Y
         // Wrap around
@@ -94,7 +84,7 @@ public class Player : Entity_Base
         if (destination.x > _horizontalBoundMax)
             destination.x = _horizontalBoundMin;
 
-        playerRigidbodyComponent.MovePosition(destination);                              
+        entityRigidBody.MovePosition(destination);                              
     }
 
     public void OnMove()
@@ -156,14 +146,14 @@ public class Player : Entity_Base
             return;
         }
             
-        if (_currentAmmo > 0 && Time.time > _canFire)
+        if (_ammoAmount > 0 && Time.time > _canFire)
         {
             _canFire = Time.time + _fireRate;
             OnFireStandardShot();
         }        
         else
         {
-            _playerContainer.GetUIManager().OnAmmoUpdate(_currentAmmo);
+            _playerContainer.GetUIManager().OnAmmoUpdate(_ammoAmount);
             return;
         }        
     }
@@ -171,8 +161,8 @@ public class Player : Entity_Base
     private void OnFireStandardShot()
     {
         Instantiate(_playerContainer.GetLaser(), transform.position + (Vector3.up * 1.05f), Quaternion.identity, _playerContainer.GetLaserContainer()).name = "Player_Laser";
-        _currentAmmo--;
-        _playerContainer.GetUIManager().OnAmmoUpdate(_currentAmmo);
+        _ammoAmount--;
+        _playerContainer.GetUIManager().OnAmmoUpdate(_ammoAmount);
        // AudioSource.PlayClipAtPoint(_playerContainer.GetLaserSound(), transform.position, 0.5f);
     }
 
@@ -227,8 +217,8 @@ public class Player : Entity_Base
     
     public void OnAmmoActive(int ammo)
     {
-        _currentAmmo += ammo;
-        _playerContainer.GetUIManager().OnAmmoUpdate(_currentAmmo);
+        _ammoAmount += ammo;
+        _playerContainer.GetUIManager().OnAmmoUpdate(_ammoAmount);
     }
 
     public void OnHealthPickup()

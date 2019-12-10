@@ -5,12 +5,11 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public class Enemy : Entity_Base, IDamageable
 {
-    [SerializeField, Range(1.0f, 10.0f)] float speed = 4f;
+    [Header("Implementing Class Settings")]
     [SerializeField] Vector2 _fireSpeed;
     [SerializeField, Range(1, 100)] int _pointsOnKill = 20;
     [SerializeField,Space] GameObject _explosionPrefab;
     [SerializeField, Space] GameObject _laserPrefab;
-    private Rigidbody2D rigidbodyComponent;
 
     private Player _player;
     private Collider2D _collider;
@@ -21,7 +20,7 @@ public class Enemy : Entity_Base, IDamageable
     private void Start()
     {        
         InitCheck();
-        rigidbodyComponent = GetComponent<Rigidbody2D>();
+        entityRigidBody = GetComponent<Rigidbody2D>();
         laserMask = "Enemy Laser";
         SpawnManager.ActiveEnemies.Add(this);
     }
@@ -76,9 +75,9 @@ public class Enemy : Entity_Base, IDamageable
     private void Movement()
     {
         if (transform.position.y <= -5.5f && _collider.enabled == true)
-            rigidbodyComponent.MovePosition(transform.position + new Vector3(Random.Range(-8f, 8f), 9f, 0f));
+            entityRigidBody.MovePosition(transform.position + new Vector3(Random.Range(-8f, 8f), 9f, 0f));
 
-        rigidbodyComponent.MovePosition(transform.position + (Vector3.down * speed * Time.fixedDeltaTime));        
+        entityRigidBody.MovePosition(transform.position + (Vector3.down * _speed * Time.fixedDeltaTime));        
     }
 
     public override void OnTakeDamage()

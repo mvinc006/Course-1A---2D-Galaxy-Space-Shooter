@@ -335,7 +335,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 243123866}
-  - component: {fileID: 243123867}
   m_Layer: 0
   m_Name: Audio_Manager
   m_TagString: Audio_Manager
@@ -358,22 +357,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &243123867
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 243123865}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dadede5c459b869419f764538d910bcc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _laserSound: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}
-  _explosionSound: {fileID: 8300000, guid: a885c043fab7e46438bba03ba9dab6bc, type: 3}
-  _powerupSound: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}
-  _gameMusic: {fileID: 821900919}
 --- !u!1 &391413946
 GameObject:
   m_ObjectHideFlags: 0
@@ -503,7 +486,6 @@ GameObject:
   - component: {fileID: 616901326}
   - component: {fileID: 616901323}
   - component: {fileID: 616901325}
-  - component: {fileID: 616901327}
   - component: {fileID: 616901328}
   m_Layer: 0
   m_Name: Player
@@ -735,11 +717,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72c025ea6c5be4a41933c181012c2e05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cameraShake: {fileID: 692593529}
   _speed: 5.77
+  _verticalBoundMin: -3.8
+  _verticalBoundMax: 0
+  _horizontalBoundMin: -10
+  _horizontalBoundMax: 10
+  _cameraShake: {fileID: 692593529}
   _fireRate: 0.1
   _thrusterBoostTime: 3
-  _currentAmmo: 15
+  _ammoAmount: 15
   _maxLives: 3
 --- !u!50 &616901326
 Rigidbody2D:
@@ -762,29 +748,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &616901327
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 616901320}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fddd7d785837aae43b67263c09a6b92e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _tripleShotLaser: {fileID: 5408697667792998211, guid: 8f7144a9d1d62d8449b2647363a8d03d,
-    type: 3}
-  _missle: {fileID: 8522384520271428877, guid: aad6bc91c2ed8c94f87e01c11d52fe0d, type: 3}
-  _shield: {fileID: 905854655}
-  _laserContainer: {fileID: 1518976199}
-  _audioManager: {fileID: 243123867}
-  _player: {fileID: 0}
-  _speedBoostBonus: 1
-  _bIsTripleShotActive: 0
-  _bIsMissileShotActive: 0
-  _bIsSpeedBoostActive: 0
 --- !u!114 &616901328
 MonoBehaviour:
   m_ObjectHideFlags: 0

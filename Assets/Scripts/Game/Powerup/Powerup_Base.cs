@@ -16,6 +16,7 @@ public abstract class Powerup_Base : MonoBehaviour
 
     protected abstract void AddToListener();    // Not all powerups will register to a listener, implementing class to decide how this is handled. 
     protected abstract void RemoveFromListener();   
+
     public virtual void Activate(GameObject owner)  // Called by the OnTriggerEnter2D event
     {
         this.owner = owner;        
