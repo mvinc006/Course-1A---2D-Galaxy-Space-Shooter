@@ -713,7 +713,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 616901320}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -2.61, z: 0}
+  m_LocalPosition: {x: -10.05, y: 1.18, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_Children:
   - {fileID: 905854656}
@@ -780,6 +780,11 @@ MonoBehaviour:
   _shield: {fileID: 905854655}
   _laserContainer: {fileID: 1518976199}
   _audioManager: {fileID: 243123867}
+  _player: {fileID: 0}
+  _speedBoostBonus: 1
+  _bIsTripleShotActive: 0
+  _bIsMissileShotActive: 0
+  _bIsSpeedBoostActive: 0
 --- !u!114 &616901328
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -799,7 +804,6 @@ MonoBehaviour:
   _thruster: {fileID: 161184293}
   _explosion: {fileID: 4128719848426241238, guid: a59f447b5295d184db84a938757c7d5f,
     type: 3}
-  _audioManager: {fileID: 243123867}
   _uiManager: {fileID: 1986496281}
   _spawnManager: {fileID: 645851287}
 --- !u!1 &645851285

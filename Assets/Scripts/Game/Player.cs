@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Animator), typeof(Powerup_Manager))]
+[RequireComponent(typeof(Animator))]
 public class Player : MonoBehaviour, IDamageable, IShoot, IMove
 {
 
@@ -20,7 +20,6 @@ public class Player : MonoBehaviour, IDamageable, IShoot, IMove
     private const float _horizontalBoundMax = 10f;    
     
     private Animator _anim;
-    private Powerup_Manager _powerupManager;
     private Player_Containers _playerContainer;
     private Rigidbody2D playerRigidbodyComponent;
 
@@ -55,10 +54,7 @@ public class Player : MonoBehaviour, IDamageable, IShoot, IMove
         if (TryGetComponent(out Animator anim))
             _anim = anim;
         else
-            Debug.LogError("Player must contain an Animator component");
-
-        if (TryGetComponent(out Powerup_Manager pManager))
-            _powerupManager = pManager;
+            Debug.LogError("Player must contain an Animator component");        
 
         if (TryGetComponent(out Player_Containers pContainer))
             _playerContainer = pContainer;
@@ -179,16 +175,16 @@ public class Player : MonoBehaviour, IDamageable, IShoot, IMove
         Instantiate(_playerContainer.GetLaser(), transform.position + (Vector3.up * 1.05f), Quaternion.identity, _playerContainer.GetLaserContainer()).name = "Player_Laser";
         _currentAmmo--;
         _playerContainer.GetUIManager().OnAmmoUpdate(_currentAmmo);
-        AudioSource.PlayClipAtPoint(_playerContainer.GetLaserSound(), transform.position, 0.5f);
+       // AudioSource.PlayClipAtPoint(_playerContainer.GetLaserSound(), transform.position, 0.5f);
     }
 
     public void OnTakeDamage()
     {
-        if (_powerupManager.GetShield().TryGetComponent(out Player_Shield shield))
+      /*  if (_powerupManager.GetShield().TryGetComponent(out Player_Shield shield))
         {            
             if(shield.shieldStatus)
                 return;
-        }
+        }*/
 
         _lives -= 1;
         _playerContainer.GetUIManager().OnUpdateLives(_lives);
@@ -213,7 +209,7 @@ public class Player : MonoBehaviour, IDamageable, IShoot, IMove
         _speed = 0f;                      
         _playerContainer.GetSpawnManager().OnPlayerDeath();
         _playerContainer.GetUIManager().OnGameOver();
-        AudioSource.PlayClipAtPoint(_playerContainer.GetExplosionSound(), transform.position, 0.04f);
+       // AudioSource.PlayClipAtPoint(_playerContainer.GetExplosionSound(), transform.position, 0.04f);
         
         foreach(SpriteRenderer renderer in this.transform.GetComponentsInChildren<SpriteRenderer>())
         {
