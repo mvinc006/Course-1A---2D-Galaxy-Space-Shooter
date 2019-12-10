@@ -19,14 +19,15 @@ public abstract class Powerup_Base : MonoBehaviour
 
     public virtual void Activate(GameObject owner)  // Called by the OnTriggerEnter2D event
     {
+        Debug.Log(this + " Powerup Activated for " + _powerupDuration + " second(s)");
+
         this._owner = owner;        
         _isActive = true;
         _powerupDuration += Time.time;
         if(_powerupClip)
             AudioSource.PlayClipAtPoint(_powerupClip, transform.position);
 
-        AddToListener();
-        Debug.Log(this + " Powerup Activated for " + _powerupDuration + " second(s)");
+        AddToListener();        
     }
 
     protected virtual void OnEntityFiredWeapon()
