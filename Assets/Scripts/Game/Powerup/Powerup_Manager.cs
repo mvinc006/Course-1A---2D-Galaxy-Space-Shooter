@@ -31,12 +31,12 @@ public class Powerup_Manager: MonoBehaviour
 
     private void OnEnable()
     {
-        Powerup.TripleShotRaised += OnTripleShotActive;
+      /*  Powerup.TripleShotRaised += OnTripleShotActive;
         Powerup.SpeedBoostRaised += OnSpeedBoostActive;
         Powerup.ShieldRaised += OnShieldActive;
         Powerup.MissileRaised += OnMissileActive;
         Powerup.HealthRaised += OnHealthPickup;
-        Powerup.AmmoRaised += OnAmmoActive;        
+        Powerup.AmmoRaised += OnAmmoActive;        */
     }
 
     public void OnFireTripleShot()
@@ -45,7 +45,7 @@ public class Powerup_Manager: MonoBehaviour
         AudioSource.PlayClipAtPoint(_audioManager.GetLaserSound, transform.position, 0.5f);
     }
 
-    public void OnMissileShot()
+   /* public void OnMissileShot()
     {
         float closestDistance = 9999;
         Enemy bestTarget = null;
@@ -69,7 +69,7 @@ public class Powerup_Manager: MonoBehaviour
             bestTarget.OnMissileTracked();
             Instantiate(_missle, transform.position, Quaternion.identity).GetComponent<Missile_Behaviour>().OnSetTarget(bestTarget.transform);
         }
-    }
+    }*/
 
     public void OnTripleShotActive(WaitForSeconds duration)
     {

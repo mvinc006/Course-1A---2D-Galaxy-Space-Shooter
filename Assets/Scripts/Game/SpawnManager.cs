@@ -24,6 +24,7 @@ public class SpawnManager : MonoBehaviour
         }; // total 351
 
     private int _powerupTotalWeight;
+    public static List<Enemy> ActiveEnemies = new List<Enemy>();
 
     private void Start()
     {     
@@ -51,7 +52,7 @@ public class SpawnManager : MonoBehaviour
             yield return new WaitForSeconds(Random.Range(_enemySpawnDelay.x, _enemySpawnDelay.y));
 
             Vector3 randomPos = new Vector3(Random.Range(-8f, 8f), 9f, 0f);
-            Instantiate(_enemyPrefab, randomPos, Quaternion.identity, _enemyContainer);            
+          Instantiate(_enemyPrefab, randomPos, Quaternion.identity, _enemyContainer).GetComponent<Enemy>();            
         }        
     }
 

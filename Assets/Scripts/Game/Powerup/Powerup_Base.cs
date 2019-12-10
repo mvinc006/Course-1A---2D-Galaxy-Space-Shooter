@@ -1,59 +1,77 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public abstract class Powerup_Base : MonoBehaviour
 {
-    [SerializeField] protected float powerupMoveSpeed = 1f;
-    [SerializeField] protected GameObject _prefab;
-    [SerializeField] protected SpriteRenderer _renderer;
-    [SerializeField] protected Collider2D _collider;
+    [Header("Base Class Settings")]
+    [SerializeField] protected float powerupDuration;
+    [SerializeField] protected GameObject powerupPrefab;
+    [SerializeField] protected AudioClip powerupClip;
 
-    protected delegate void PowerupChangeEventHandler(object sender, bool removeFromListener = false);
-    protected static event PowerupChangeEventHandler PowerupChanged;
+    protected GameObject owner;
+    private bool isActive;
 
-    public delegate void WeaponChangeEventHandler(object sender, bool isEnabled);
-    public static event WeaponChangeEventHandler PrimaryWeaponChange;
-
-    protected abstract void OnTriggerEnter2D(Collider2D collision);
-
-    protected virtual void OnWeaponChange(object sender, bool isEnabled)
+    protected abstract void AddToListener();    // Not all powerups will register to a listener, implementing class to decide how this is handled. 
+    protected abstract void RemoveFromListener();   
+    public virtual void Activate(GameObject owner)  // Called by the OnTriggerEnter2D event
     {
-        if(PrimaryWeaponChange != null)
-        {            
-            PrimaryWeaponChange.Invoke(sender, isEnabled);
-        }                    
+        this.owner = owner;        
+        isActive = true;
+        powerupDuration += Time.time;
+        if(powerupClip)
+            AudioSource.PlayClipAtPoint(powerupClip, transform.position);
+
+        AddToListener();
+        Debug.Log(this + " Powerup Activated for " + powerupDuration + " second(s)");
     }
 
-    protected virtual void OnPowerupChangedEvent(object sender, bool removeFromListener = false) 
+    protected virtual void OwnerFired()
     {
-        if(PowerupChanged != null)
-        {
-            if (removeFromListener)
-            {
-                PowerupChanged -= OnPowerupChangedEvent;
-                Debug.Log(sender + " is overriding other existing powerups in this powerup group- (" + this + ") will be destroyed");
-            }
-            else
-            {
-                Debug.Log(sender + " has triggered the PowerupChanged event for this group - (sent from: " + this + ")");
-            }            
-        }         
+        if (powerupPrefab != null)
+            Instantiate(powerupPrefab, owner.transform.position, Quaternion.identity);
     }
-   
-    protected virtual void OnPowerupPickedUp(object sender, bool bIsSingleInstancePowerup)
-    {
-        _collider.enabled = false;
-        _renderer.enabled = false;
-        if(bIsSingleInstancePowerup)
-        {
-            PowerupChanged?.Invoke(sender); // call the events on any currently subscribed powerups that aren't us            
-            PowerupChanged += OnPowerupChangedEvent; // subscribe after all other powerups marked as otherPowerupsOverride have responded to the event.
-        }                
-    }
+
     protected virtual void Update()
     {
-        if (transform.position.y >= -5.5f)
-            transform.Translate(Vector3.down * powerupMoveSpeed * Time.deltaTime);
+        if (isActive)
+        {            
+            if (Time.time > powerupDuration)
+                StopPowerup();
+        }
+        else
+        {
+            transform.Translate(Vector3.down * 1.5f * Time.deltaTime);
+            if (transform.position.y <= -5.5f)
+                Destroy(this.gameObject);
+        }
+    }
+
+    public virtual void StopPowerup()
+               {
+        Debug.Log(this + "Powerup Deactivated");
+        RemoveFromListener();
+        Destroy(this.gameObject);
+    }
+
+    protected virtual void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.TryGetComponent(out Player player))
+        {            
+            if(TryGetComponent(out SpriteRenderer spriteRenderer))
+                spriteRenderer.enabled = false;
+            if(TryGetComponent(out Collider2D collider))
+                collider.enabled = false;
+
+            SpriteRenderer[] spriteRenderers = transform.GetComponentsInChildren<SpriteRenderer>();
+
+            for (int i = 0; i < spriteRenderers.Length; i++)
+            {
+                spriteRenderers[i].enabled = false;     // Health Powerup contains more than one sprite to disable
+            }
+
+            Activate(player.gameObject);
+        }            
     }
 }

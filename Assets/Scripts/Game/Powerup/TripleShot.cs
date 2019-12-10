@@ -4,63 +4,57 @@ using UnityEngine;
 
 public class TripleShot : Powerup_Base
 {
+    [Header("Implementing Class Settings")]
+    [SerializeField] float fireRate;
+    [SerializeField] AudioClip laserSound;
 
-    [SerializeField] float _duration = 5f;
-    [SerializeField] float _fireSpeed = 1.0f;    
-    private IEnumerator Timer;
-    private bool _canFire = false;
-    private float _fireCheck = -1f;
-    private Transform _parent;
-
-    private void OnFireTripleShot()
+    private float canFire;
+    protected static TripleShot Instance;    
+    
+    protected override void AddToListener()
     {
-        Instantiate(_prefab, _parent.position, Quaternion.identity).name = "TripleShot";
-      //  AudioSource.PlayClipAtPoint(_manager.GetLaserSound, transform.position, 0.5f);
-    }
-
-    private void OnPowerupEnabled(WaitForSeconds duration)
-    {
-        _canFire = true;
-        OnWeaponChange(this, true);
-
-        if (Timer != null)
-            StopCoroutine(Timer);        
-
-        Timer = PowerupTimer(duration);
-        StartCoroutine(Timer);
-    }
-
-    private IEnumerator PowerupTimer(WaitForSeconds duration)
-    {
-        yield return duration;
-        _canFire = false;
-        OnWeaponChange(this, false);
-    }
-
-    protected override void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.TryGetComponent(out Player player))
+        if (owner.TryGetComponent(out IShoot shootingEntity))
         {
-            OnPowerupPickedUp(this, true);
-            OnPowerupEnabled(new WaitForSeconds(_duration));
-            _parent = collision.transform;
+            shootingEntity.OnFire += OwnerFired;
+            Debug.Log(this + " Successfully Registered to " + owner.name);
         }            
     }
 
-    protected override void OnPowerupChangedEvent(object sender, bool removeFromListener)
+    protected override void RemoveFromListener()
     {
-        base.OnPowerupChangedEvent(sender, true);                
-        Destroy(this.gameObject);
-    }
-    protected override void Update()
-    {
-        base.Update();
-
-        if (Input.GetKey(KeyCode.Space) && _canFire == true && Time.time >=_fireCheck)
+        if (owner.TryGetComponent(out IShoot shootingEntity))
         {
-            _fireCheck = Time.time + _fireSpeed;
-            OnFireTripleShot();
+            shootingEntity.OnFire -= OwnerFired;
+            Debug.Log(this + " Successfully Un-Registered to " + owner.name);
+        }            
+    }
+
+    public override void Activate(GameObject owner)
+    {
+        if (Instance != null)
+            Instance.StopPowerup();
+       
+        Instance = this;
+        base.Activate(owner);
+    }
+
+    protected override void OwnerFired()
+    {
+        if (Time.time > canFire)
+        {
+            canFire = Time.time + fireRate;
+
+            if(laserSound)
+                AudioSource.PlayClipAtPoint(laserSound, transform.position);
+            
+            base.OwnerFired();           
         }
     }
 
+    public override void StopPowerup()
+   {
+        Instance = null;
+        base.StopPowerup();
+    }
+   
 }

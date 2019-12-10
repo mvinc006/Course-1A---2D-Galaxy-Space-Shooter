@@ -10,6 +10,7 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField, Range(1, 100)] int _pointsOnKill = 20;
     [SerializeField,Space] GameObject _explosionPrefab;
     [SerializeField, Space] GameObject _laserPrefab;
+    private Rigidbody2D rigidbodyComponent;
 
     private Player _player;
     private Collider2D _collider;
@@ -21,7 +22,9 @@ public class Enemy : MonoBehaviour, IDamageable
     private void Start()
     {        
         InitCheck();
+        rigidbodyComponent = GetComponent<Rigidbody2D>();
         laserMask = "Enemy Laser";
+        SpawnManager.ActiveEnemies.Add(this);
     }
 
     private void InitCheck()
@@ -42,12 +45,12 @@ public class Enemy : MonoBehaviour, IDamageable
             Debug.LogError("Enemy:: Missing reference 'LaserPrefab' must be assinged in inspector.");
     }
 
-    public void OnMissileTracked()
+    public void OnMissileTracked(bool value)
     {
-        _missileTracked = true;
+        _missileTracked = value;
     }
 
-    public bool OnCheckMissileTracked()
+    public bool bIsMissleTracked()
     {
         return _missileTracked;
     }
@@ -62,17 +65,21 @@ public class Enemy : MonoBehaviour, IDamageable
     }
 
     private void Update()
+    {        
+        Fire();        
+    }
+
+    private void FixedUpdate()
     {
         Movement();
-        Fire();
     }
 
     private void Movement()
     {
         if (transform.position.y <= -5.5f && _collider.enabled == true)
-            transform.position = new Vector3(Random.Range(-8f, 8f), 9f, 0f);
+            rigidbodyComponent.MovePosition(transform.position + new Vector3(Random.Range(-8f, 8f), 9f, 0f));
 
-        transform.Translate(Vector3.down * speed * Time.deltaTime);
+        rigidbodyComponent.MovePosition(transform.position + (Vector3.down * speed * Time.fixedDeltaTime));        
     }
 
     public void OnTakeDamage()
@@ -100,8 +107,12 @@ public class Enemy : MonoBehaviour, IDamageable
             Debug.Log(other.name + " with tag: " + other.tag + " caused " + gameObject.name + " with tag: " + gameObject.tag + " to call OnDeath()");
             OnDeath();
         }                                    
-    }        
-    
+    }
+
+    private void OnDestroy()
+    {
+        SpawnManager.ActiveEnemies.Remove(this);
+    }
 
 
 }

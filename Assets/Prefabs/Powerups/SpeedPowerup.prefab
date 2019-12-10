@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1660843158370581673}
   - component: {fileID: 6175191499433746211}
   - component: {fileID: 881988914248508580}
-  - component: {fileID: -1548585915546629044}
+  - component: {fileID: 70677740757042261}
   m_Layer: 0
   m_Name: SpeedPowerup
   m_TagString: Powerup
@@ -150,7 +150,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 2.3668518, y: 3.695385}
   m_EdgeRadius: 0
---- !u!114 &-1548585915546629044
+--- !u!114 &70677740757042261
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -159,9 +159,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8440472403186628365}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff7e58be304a8c244ba9e073c5dccaa4, type: 3}
+  m_Script: {fileID: 11500000, guid: 5cbd2aae23d70a6428243d6e5c94d199, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 4
-  _duration: 8
-  _powerupType: 2
+  powerupDuration: 15
+  powerupPrefab: {fileID: 0}
+  powerupClip: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}
+  speedBoost: 3.02

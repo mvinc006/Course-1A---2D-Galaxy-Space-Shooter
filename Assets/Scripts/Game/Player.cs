@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator), typeof(Powerup_Manager))]
-public class Player : MonoBehaviour, IDamageable
+public class Player : MonoBehaviour, IDamageable, IShoot, IMove
 {
 
     [SerializeField, Space] Animator _cameraShake;
@@ -15,31 +16,35 @@ public class Player : MonoBehaviour, IDamageable
 
     private const float _verticalBoundMin = -3.8f;
     private const float _verticalBoundMax = 0f;
-    private const float _horizontalBoundMin = -11.3f;
-    private const float _horizontalBoundMax = 11.3f;    
+    private const float _horizontalBoundMin = -10f;
+    private const float _horizontalBoundMax = 10f;    
     
     private Animator _anim;
     private Powerup_Manager _powerupManager;
     private Player_Containers _playerContainer;
+    private Rigidbody2D playerRigidbodyComponent;
 
     private float _canFire = -1f;
     private float _canBoost = 3f;
     private int _lives = 3;
     private bool _boostRecharging;
-    private bool _weaponChanged;
     private float _thrusterSpeedBonus = 1f;
     private int _score = 0;
 
+    public event Action OnFire;    
+    private float SpeedMultiplier = 1.0f;
     public string laserMask { get ; set ; }
 
+    private Vector3 playerInput;
     void Start()
     {
-        transform.position = new Vector3(0f, -3.8f, 0f);       
+        transform.position = new Vector3(0f, -3.8f, 0f);
+        playerRigidbodyComponent = GetComponent<Rigidbody2D>();
         InitCheck();
         laserMask = "Player Laser";
         _playerContainer.GetUIManager().OnThrusterUpdate(_canBoost, _thrusterBoostTime);
         _playerContainer.GetUIManager().OnAmmoUpdate(_currentAmmo);
-        Powerup_Base.PrimaryWeaponChange += OnWeaponChanged;
+    //    Powerup_Base.PrimaryWeaponChange += OnWeaponChanged;
         /*Powerup_Base.AddWeaponChangeListener(OnWeaponChanged);*/
     }
 
@@ -68,31 +73,34 @@ public class Player : MonoBehaviour, IDamageable
 
     void Update()
     {             
-        if (Input.GetKey(KeyCode.Space) && Time.time > _canFire)
+        if (Input.GetKey(KeyCode.Space))
             Fire();        
         if (Input.GetKey(KeyCode.LeftShift) && _boostRecharging == false)
             OnBoost();        
         else if (!Input.GetKey(KeyCode.LeftShift) || _boostRecharging == true)
             OnBoostRecharging();
 
-            CalculateMovement();
+        playerInput = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0f);
+        OnMove();        
+    }
+
+    private void FixedUpdate()
+    {
+        CalculateMovement();
     }
 
     private void CalculateMovement()
     {
-        Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0f);
-        transform.Translate(direction * _speed * _powerupManager.GetSpeedBonus() * _thrusterSpeedBonus * Time.deltaTime);
+        Vector3 destination = transform.position + (playerInput * _speed * SpeedMultiplier * _thrusterSpeedBonus * Time.fixedDeltaTime);
+                
+        destination.y = Mathf.Clamp(destination.y, _verticalBoundMin, _verticalBoundMax); // Clamp Y
+        // Wrap around
+        if (destination.x < _horizontalBoundMin)
+            destination.x = _horizontalBoundMax;
+        if (destination.x > _horizontalBoundMax)
+            destination.x = _horizontalBoundMin;
 
-        // Clamp Vertical
-        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, _verticalBoundMin, _verticalBoundMax), transform.position.z);
-
-        // Wrap-around Horiztonal
-        if (transform.position.x >= _horizontalBoundMax)
-            transform.position = new Vector3(_horizontalBoundMin, transform.position.y, transform.position.z);
-        else if (transform.position.x <= -11.3f)
-            transform.position = new Vector3(_horizontalBoundMax, transform.position.y, transform.position.z);
-
-        OnMove();        
+        playerRigidbodyComponent.MovePosition(destination);                              
     }
 
     private void OnMove()
@@ -146,20 +154,17 @@ public class Player : MonoBehaviour, IDamageable
     }
 
     private void Fire()
-    {        
-        _canFire = Time.time + _fireRate;                
-
+    {                
         // TripleShot is a powerup and therefore exempt from the rules of ammunition
-        if (_powerupManager.GetTripleShotStatus())
-        {
-            _powerupManager.OnFireTripleShot();            
-        }        
-        else if (_powerupManager.GetMissileShotStatus())
-        {
-            _powerupManager.OnMissileShot();
+        if (OnFire != null)
+        {            
+            OnFire();
+            return;
         }
-        else if(_currentAmmo > 0 && !_weaponChanged)
+            
+        if (_currentAmmo > 0 && Time.time > _canFire)
         {
+            _canFire = Time.time + _fireRate;
             OnFireStandardShot();
         }        
         else
@@ -176,13 +181,6 @@ public class Player : MonoBehaviour, IDamageable
         _playerContainer.GetUIManager().OnAmmoUpdate(_currentAmmo);
         AudioSource.PlayClipAtPoint(_playerContainer.GetLaserSound(), transform.position, 0.5f);
     }
-
-    private void OnWeaponChanged(object sender, bool disablePrimaryWeapon)
-    {
-        Debug.Log(sender + " has requested to change player weapon change state in " + this + " to: " + disablePrimaryWeapon);
-        _weaponChanged = disablePrimaryWeapon;
-    }
-
 
     public void OnTakeDamage()
     {
@@ -203,7 +201,7 @@ public class Player : MonoBehaviour, IDamageable
 
     private void OnWingDamage()
     {
-        int randomWingDamage = Random.Range(0, 100);
+        int randomWingDamage = UnityEngine.Random.Range(0, 100);
         if (!_playerContainer.GetLeftWing().activeInHierarchy && randomWingDamage <= 49 || _playerContainer.GetRightWing().activeInHierarchy)
             _playerContainer.GetLeftWing().SetActive(true);
         else if (!_playerContainer.GetRightWing().activeInHierarchy && randomWingDamage >= 50 || _playerContainer.GetLeftWing().activeInHierarchy)
@@ -241,11 +239,15 @@ public class Player : MonoBehaviour, IDamageable
 
     public void OnHealthPickup()
     {       
-        _lives++;
+        _lives++;        
         _lives = Mathf.Clamp(_lives, 0, _maxLives);
         _playerContainer.GetUIManager().OnUpdateLives(_lives);
     }
-    
+
+    public void OnSpeedBoost(float speed)
+    {
+        SpeedMultiplier = speed;
+    }
 }
 
 

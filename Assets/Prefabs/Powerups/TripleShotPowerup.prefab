@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6133761483144054490}
   - component: {fileID: 8380693980792318604}
   - component: {fileID: 1908265474111241622}
-  - component: {fileID: 9127807974856525156}
+  - component: {fileID: 1808693426203834402}
   m_Layer: 0
   m_Name: TripleShotPowerup
   m_TagString: Powerup
@@ -150,7 +150,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &9127807974856525156
+--- !u!114 &1808693426203834402
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -159,13 +159,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 7174705709187411537}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff7e58be304a8c244ba9e073c5dccaa4, type: 3}
+  m_Script: {fileID: 11500000, guid: b967adcc7d433634dbdbf44e32bc8c2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _powerupMoveSpeed: 4
-  _shieldLife: 0
-  _ammo: 100
-  _duration: 8
-  _ownerTag: 
-  _powerupType: 1
-  _shieldHitColorRange: []
+  powerupDuration: 15
+  powerupPrefab: {fileID: 5408697667792998211, guid: 8f7144a9d1d62d8449b2647363a8d03d,
+    type: 3}
+  powerupClip: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}
+  fireRate: 0.15
+  laserSound: {fileID: 8300000, guid: 75676f361bdfeaf41a46623e95df3dbc, type: 3}

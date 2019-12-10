@@ -41,7 +41,7 @@ public class Laser_Behaviour : MonoBehaviour
     }
     private void OnPlayerLaserMove()
     {
-        if (transform.position.y >= 8f && transform.parent.name == "TripleShot")
+        if (transform.position.y >= 8f && transform.parent.CompareTag("Laser"))
             Destroy(transform.parent.gameObject);
         else if (transform.position.y >= 8f)
             Destroy(gameObject);

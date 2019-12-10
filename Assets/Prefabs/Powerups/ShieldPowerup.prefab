@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 6133761483144054490}
   - component: {fileID: 8380693980792318604}
   - component: {fileID: 1908265474111241622}
-  - component: {fileID: -8401089681312352872}
   m_Layer: 0
   m_Name: ShieldPowerup
   m_TagString: Powerup
@@ -150,24 +149,3 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &-8401089681312352872
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7174705709187411537}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff7e58be304a8c244ba9e073c5dccaa4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _powerupMoveSpeed: 4
-  _shieldLife: 3
-  _ammo: 100
-  _duration: 0
-  _ownerTag: Player Laser
-  _powerupType: 3
-  _shieldHitColorRange:
-  - {r: 1, g: 0.039559267, b: 0, a: 0.20784314}
-  - {r: 0, g: 1, b: 0.95796084, a: 0.54509807}
