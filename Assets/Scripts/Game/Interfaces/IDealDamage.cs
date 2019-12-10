@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-public interface IShoot
+public interface IDealDamage
 {   
-    event Action OnFire;
+    event Action OnEntityFireWeapon;
+    void OnDealDamage();
     
 }

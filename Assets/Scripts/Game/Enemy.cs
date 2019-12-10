@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
-public class Enemy : MonoBehaviour, IDamageable
+public class Enemy : Entity_Base, IDamageable
 {
     [SerializeField, Range(1.0f, 10.0f)] float speed = 4f;
     [SerializeField] Vector2 _fireSpeed;
@@ -17,7 +17,6 @@ public class Enemy : MonoBehaviour, IDamageable
     private bool _missileTracked;
     private float _canFire;
 
-    public string laserMask { get; set; }
 
     private void Start()
     {        
@@ -55,9 +54,9 @@ public class Enemy : MonoBehaviour, IDamageable
         return _missileTracked;
     }
 
-    private void Fire()
+    public override void OnDealDamage()
     {
-        if (Time.time >= _canFire)
+        if (Time.time >= _canFire && !ShouldFireSpecialWeapon())
         {
             _canFire = Time.time + Random.Range(_fireSpeed.x, _fireSpeed.y);
             Instantiate(_laserPrefab, transform.position, Quaternion.identity);            
@@ -66,7 +65,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private void Update()
     {        
-        Fire();        
+        OnDealDamage();        
     }
 
     private void FixedUpdate()
@@ -82,11 +81,11 @@ public class Enemy : MonoBehaviour, IDamageable
         rigidbodyComponent.MovePosition(transform.position + (Vector3.down * speed * Time.fixedDeltaTime));        
     }
 
-    public void OnTakeDamage()
+    public override void OnTakeDamage()
     {
         OnDeath();
     }
-    public void OnDeath()
+    public override void OnDeath()
     {
         _player.OnScoreUpdate(_pointsOnKill);
         _collider.enabled = false;
@@ -114,5 +113,8 @@ public class Enemy : MonoBehaviour, IDamageable
         SpawnManager.ActiveEnemies.Remove(this);
     }
 
-
+    public override void OnSpeedBoost(float speed)
+    {
+        throw new System.NotImplementedException();
+    }
 }

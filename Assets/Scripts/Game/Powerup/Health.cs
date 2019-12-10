@@ -22,6 +22,7 @@ public class Health : Powerup_Base
 
     private void AddHealth()
     {
+        // Enemy don't implement health 
         if (owner.TryGetComponent(out Player entity))
             entity.OnHealthPickup();
     }

@@ -20,6 +20,7 @@ public class Ammo : Powerup_Base
 
     private void AddAmmo()
     {
+        // Enemy AI don't implement ammo
         if (owner.TryGetComponent(out Player entity))
             entity.OnAmmoActive(_ammoCount);
     }

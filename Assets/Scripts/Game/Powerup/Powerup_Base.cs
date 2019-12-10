@@ -7,10 +7,11 @@ public abstract class Powerup_Base : MonoBehaviour
 {
     [Header("Base Class Settings")]
     [SerializeField] protected float powerupDuration;
+    [SerializeField] protected string collectingEntityTag;
     [SerializeField] protected GameObject powerupPrefab;
     [SerializeField] protected AudioClip powerupClip;
 
-    protected GameObject owner;
+    protected GameObject owner;    
     private bool isActive;
 
     protected abstract void AddToListener();    // Not all powerups will register to a listener, implementing class to decide how this is handled. 
@@ -27,7 +28,7 @@ public abstract class Powerup_Base : MonoBehaviour
         Debug.Log(this + " Powerup Activated for " + powerupDuration + " second(s)");
     }
 
-    protected virtual void OwnerFired()
+    protected virtual void OnEntityFiredWeapon()
     {
         if (powerupPrefab != null)
             Instantiate(powerupPrefab, owner.transform.position, Quaternion.identity);
@@ -55,9 +56,11 @@ public abstract class Powerup_Base : MonoBehaviour
         Destroy(this.gameObject);
     }
 
+    public virtual void SetCollectionMask(string mask) { collectingEntityTag = mask; }
+
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.TryGetComponent(out Player player))
+        if (collision.TryGetComponent(out Entity_Base entity) && collision.CompareTag(collectingEntityTag))
         {            
             if(TryGetComponent(out SpriteRenderer spriteRenderer))
                 spriteRenderer.enabled = false;
@@ -71,7 +74,7 @@ public abstract class Powerup_Base : MonoBehaviour
                 spriteRenderers[i].enabled = false;     // Health Powerup contains more than one sprite to disable
             }
 
-            Activate(player.gameObject);
+            Activate(entity.gameObject);
         }            
     }
 }

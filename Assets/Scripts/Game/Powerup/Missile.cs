@@ -12,14 +12,14 @@ public class Missile : Powerup_Base
     protected static Missile Instance;
     protected override void AddToListener()
     {
-        if (owner.TryGetComponent(out IShoot entityShooting))
-            entityShooting.OnFire += OwnerFired;
+        if (owner.TryGetComponent(out IDealDamage entityShooting))
+            entityShooting.OnEntityFireWeapon += OnEntityFiredWeapon;
     }
 
     protected override void RemoveFromListener()
     {
-        if (owner.TryGetComponent(out IShoot entityShooting))
-            entityShooting.OnFire -= OwnerFired;
+        if (owner.TryGetComponent(out IDealDamage entityShooting))
+            entityShooting.OnEntityFireWeapon -= OnEntityFiredWeapon;
     }
 
     public override void Activate(GameObject owner)
@@ -32,12 +32,12 @@ public class Missile : Powerup_Base
         base.Activate(owner);
     }
 
-    protected override void OwnerFired()
+    protected override void OnEntityFiredWeapon()
     {
         if (Time.time > canFire)
         {
             canFire = Time.time + fireRate;
-            base.OwnerFired();                                        
+            base.OnEntityFiredWeapon();                                        
         }
     }
 

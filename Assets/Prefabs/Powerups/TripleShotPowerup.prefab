@@ -163,6 +163,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   powerupDuration: 15
+  collectionMask: Player
   powerupPrefab: {fileID: 5408697667792998211, guid: 8f7144a9d1d62d8449b2647363a8d03d,
     type: 3}
   powerupClip: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}

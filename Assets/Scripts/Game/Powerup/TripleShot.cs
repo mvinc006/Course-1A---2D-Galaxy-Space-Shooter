@@ -13,18 +13,18 @@ public class TripleShot : Powerup_Base
     
     protected override void AddToListener()
     {
-        if (owner.TryGetComponent(out IShoot shootingEntity))
+        if (owner.TryGetComponent(out IDealDamage shootingEntity))
         {
-            shootingEntity.OnFire += OwnerFired;
+            shootingEntity.OnEntityFireWeapon += OnEntityFiredWeapon;
             Debug.Log(this + " Successfully Registered to " + owner.name);
         }            
     }
 
     protected override void RemoveFromListener()
     {
-        if (owner.TryGetComponent(out IShoot shootingEntity))
+        if (owner.TryGetComponent(out IDealDamage shootingEntity))
         {
-            shootingEntity.OnFire -= OwnerFired;
+            shootingEntity.OnEntityFireWeapon -= OnEntityFiredWeapon;
             Debug.Log(this + " Successfully Un-Registered to " + owner.name);
         }            
     }
@@ -38,7 +38,7 @@ public class TripleShot : Powerup_Base
         base.Activate(owner);
     }
 
-    protected override void OwnerFired()
+    protected override void OnEntityFiredWeapon()
     {
         if (Time.time > canFire)
         {
@@ -47,7 +47,7 @@ public class TripleShot : Powerup_Base
             if(laserSound)
                 AudioSource.PlayClipAtPoint(laserSound, transform.position);
             
-            base.OwnerFired();           
+            base.OnEntityFiredWeapon();           
         }
     }
 

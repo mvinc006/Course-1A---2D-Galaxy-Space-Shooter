@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
-public class Player : MonoBehaviour, IDamageable, IShoot, IMove
+public class Player : Entity_Base
 {
 
     [SerializeField, Space] Animator _cameraShake;
@@ -30,9 +30,9 @@ public class Player : MonoBehaviour, IDamageable, IShoot, IMove
     private float _thrusterSpeedBonus = 1f;
     private int _score = 0;
 
-    public event Action OnFire;    
+     
     private float SpeedMultiplier = 1.0f;
-    public string laserMask { get ; set ; }
+    
 
     private Vector3 playerInput;
     void Start()
@@ -43,8 +43,6 @@ public class Player : MonoBehaviour, IDamageable, IShoot, IMove
         laserMask = "Player Laser";
         _playerContainer.GetUIManager().OnThrusterUpdate(_canBoost, _thrusterBoostTime);
         _playerContainer.GetUIManager().OnAmmoUpdate(_currentAmmo);
-    //    Powerup_Base.PrimaryWeaponChange += OnWeaponChanged;
-        /*Powerup_Base.AddWeaponChangeListener(OnWeaponChanged);*/
     }
 
     private void InitCheck()
@@ -70,7 +68,7 @@ public class Player : MonoBehaviour, IDamageable, IShoot, IMove
     void Update()
     {             
         if (Input.GetKey(KeyCode.Space))
-            Fire();        
+            OnDealDamage();        
         if (Input.GetKey(KeyCode.LeftShift) && _boostRecharging == false)
             OnBoost();        
         else if (!Input.GetKey(KeyCode.LeftShift) || _boostRecharging == true)
@@ -99,7 +97,7 @@ public class Player : MonoBehaviour, IDamageable, IShoot, IMove
         playerRigidbodyComponent.MovePosition(destination);                              
     }
 
-    private void OnMove()
+    public void OnMove()
     {
         _anim.SetFloat("xVel", Input.GetAxis("Horizontal"));
     }   
@@ -149,12 +147,12 @@ public class Player : MonoBehaviour, IDamageable, IShoot, IMove
         _thrusterSpeedBonus = 1f;                    
     }
 
-    private void Fire()
+    public override void OnDealDamage()
     {                
         // TripleShot is a powerup and therefore exempt from the rules of ammunition
-        if (OnFire != null)
-        {            
-            OnFire();
+        if (ShouldFireSpecialWeapon())
+        {                        
+            // ShouldFireSpecialWeapon calls the OnFire action from base class for us if true. We don't want to execute ammo related code, so we return.
             return;
         }
             
@@ -178,7 +176,7 @@ public class Player : MonoBehaviour, IDamageable, IShoot, IMove
        // AudioSource.PlayClipAtPoint(_playerContainer.GetLaserSound(), transform.position, 0.5f);
     }
 
-    public void OnTakeDamage()
+    public override void OnTakeDamage()
     {
       /*  if (_powerupManager.GetShield().TryGetComponent(out Player_Shield shield))
         {            
@@ -204,7 +202,7 @@ public class Player : MonoBehaviour, IDamageable, IShoot, IMove
             _playerContainer.GetRightWing().SetActive(true);        
     }
 
-    public void OnDeath()
+    public override void OnDeath()
     {
         _speed = 0f;                      
         _playerContainer.GetSpawnManager().OnPlayerDeath();
@@ -238,9 +236,14 @@ public class Player : MonoBehaviour, IDamageable, IShoot, IMove
         _lives++;        
         _lives = Mathf.Clamp(_lives, 0, _maxLives);
         _playerContainer.GetUIManager().OnUpdateLives(_lives);
+
+        if (_playerContainer.GetLeftWing().activeInHierarchy)
+            _playerContainer.GetLeftWing().SetActive(false);
+        else if (_playerContainer.GetRightWing().activeInHierarchy)
+            _playerContainer.GetRightWing().SetActive(false);
     }
 
-    public void OnSpeedBoost(float speed)
+    public override void OnSpeedBoost(float speed)
     {
         SpeedMultiplier = speed;
     }
