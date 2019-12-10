@@ -10,6 +10,7 @@ public class Laser_Behaviour : MonoBehaviour
     [SerializeField] private Vector3 _direction;
 
     private bool _hasCollided;
+    private Rigidbody2D _laserRigidbody;
 
     private void Start()
     {
@@ -17,11 +18,14 @@ public class Laser_Behaviour : MonoBehaviour
             gameObject.tag = "Enemy Laser";
         else
             gameObject.tag = "Player Laser";
+
+        _laserRigidbody = GetComponent<Rigidbody2D>();
     }
 
     void Update()
-    {      
-        transform.Translate(_direction * _laserSpeed * Time.deltaTime);
+    {
+        _laserRigidbody.MovePosition(transform.position + (_direction * _laserSpeed * Time.fixedDeltaTime));
+        //transform.Translate(_direction * _laserSpeed * Time.deltaTime);
         
         if (_direction == Vector3.up) 
             OnPlayerLaserMove();

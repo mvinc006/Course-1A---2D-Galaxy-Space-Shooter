@@ -60,12 +60,7 @@ public abstract class Powerup_Base : MonoBehaviour
     public virtual void SetCollectionMask(string mask) { _collectingEntityTag = mask; }
 
     protected virtual void OnTriggerEnter2D(Collider2D collision)
-    {
-        Debug.Log(collision.gameObject + " has collided with " + this.gameObject);
-        Debug.Log(collision.gameObject + " Tag Name: " + collision.tag);
-        Debug.Log("Comparing against: " + _collectingEntityTag);
-        
-
+    {      
         if (collision.TryGetComponent(out Entity_Base entity))
         {
             if (!collision.CompareTag(_collectingEntityTag))

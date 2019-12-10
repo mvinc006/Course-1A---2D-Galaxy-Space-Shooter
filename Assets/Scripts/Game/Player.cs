@@ -23,7 +23,7 @@ public class Player : Entity_Base
     private bool _boostRecharging;
     private float _thrusterSpeedBonus = 1f;
     private float _speedMultiplier = 1.0f;
-    private Vector3 _keyboardInput;
+    private Vector3 _keyboardInput;    
 
     void Start()
     {
@@ -82,16 +82,15 @@ public class Player : Entity_Base
 
     private void CalculateMovement()
     {
-        Vector3 destination = transform.position + (_keyboardInput * _speed * _speedMultiplier * _thrusterSpeedBonus * Time.fixedDeltaTime);
-                
-        destination.y = Mathf.Clamp(destination.y, _verticalBoundMin, _verticalBoundMax); // Clamp Y
+        Vector3 _destination = transform.position + (_keyboardInput * _speed * _speedMultiplier * _thrusterSpeedBonus * Time.fixedDeltaTime);
+        _destination.y = Mathf.Clamp(_destination.y, _verticalBoundMin, _verticalBoundMax); // Clamp Y
         // Wrap around
-        if (destination.x < _horizontalBoundMin)
-            destination.x = _horizontalBoundMax;
-        if (destination.x > _horizontalBoundMax)
-            destination.x = _horizontalBoundMin;
+        if (_destination.x < _horizontalBoundMin)
+            _destination.x = _horizontalBoundMax;
+        if (_destination.x > _horizontalBoundMax)
+            _destination.x = _horizontalBoundMin;
 
-        _entityRigidBody.MovePosition(destination);                              
+        _entityRigidBody.MovePosition(_destination);
     }
 
     public void OnMove()
